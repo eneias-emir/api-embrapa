@@ -40,13 +40,18 @@ class ScrapingEmbrapa:
         driver = driver_setup()
 
         for i in range(2, 7):
-            opt = f'opt_0{i}'
-            driver.get(f'{self.url_embrapa}?opcao={opt}')
+            for j in range(1, 6):
+                opt = f'opt_0{i}'
+                subopt = f'subopt_0{j}'
+                driver.get(f'{self.url_embrapa}?opcao={opt}&subopcao={subopt}')
 
-            results = driver.find_elements(By.LINK_TEXT, "DOWNLOAD")
+                results = driver.find_elements(By.LINK_TEXT, "DOWNLOAD")
 
-            for dictionary in results:
-                lista_url_csv.append(dictionary.get_attribute('href'))
+                for dictionary in results:
+                    href = dictionary.get_attribute('href')
+                    print("href=", href)
+                    if ('.csv' in href.lower() ) and (href not in lista_url_csv):
+                        lista_url_csv.append(href)
 
         return lista_url_csv
 

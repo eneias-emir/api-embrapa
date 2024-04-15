@@ -2,6 +2,7 @@ from typing import Union
 from fastapi import FastAPI
 
 from ScrapingEmbrapa import ScrapingEmbrapa
+from utils import download_csv
 
 app = FastAPI()
 
@@ -20,6 +21,17 @@ def read_item(item_id: int, q: Union[str, None] = None):
 def read_lista_urls_csv():
     scraping_embrapa = ScrapingEmbrapa()
     lista = scraping_embrapa.get_lista_url_csv()
+
+    return lista
+
+
+@app.get("/atualizar_dados")
+def atualizar_dados():
+    scraping_embrapa = ScrapingEmbrapa()
+    lista = scraping_embrapa.get_lista_url_csv()
+
+    for url in lista:
+        download_csv(url)
 
     return lista
 
