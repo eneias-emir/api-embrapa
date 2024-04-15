@@ -30,8 +30,9 @@ def atualizar_dados():
     scraping_embrapa = ScrapingEmbrapa()
     lista = scraping_embrapa.get_lista_url_csv()
 
-    for url in lista:
-        download_csv(url)
+    for obj_url in lista:
+        print("obj_url:", obj_url["url"])
+        download_csv(obj_url["url"])
 
     return lista
 

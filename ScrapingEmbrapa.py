@@ -33,28 +33,47 @@ class ScrapingEmbrapa:
     def __init__(self):
         self.url_embrapa: str = 'http://vitibrasil.cnpuv.embrapa.br/index.php'
 
+    def get_lista_btn_class(self, driver: webdriver, class_name: str) -> list:
+        result = []
+
+        botoes = driver.find_elements(By.CLASS_NAME, class_name)
+        for btn in botoes:
+            value = btn.get_attribute('value')
+            txt = btn.text
+            result.append((value, txt))
+
+        return result
+
+    def add_item_lista(self, opt: str, subopt: str, desc_opt: str, desc_subopt: str, driver: webdriver, lista: list) -> None:
+        results = driver.find_elements(By.LINK_TEXT, "DOWNLOAD")
+
+        for dictionary in results:
+            href = dictionary.get_attribute('href')
+            if ('.csv' in href.lower() ):
+                lista.append({"opt": opt, "subopt": subopt, "desc_opt": desc_opt, "desc_subopt": desc_subopt, "url": href})
+
     def get_lista_url_csv(self) -> list:
         lista_url_csv = []
 
         # initialize an instance of the Chrome driver (browser)
         driver = driver_setup()
 
-        for i in range(2, 7):
-            for j in range(1, 6):
-                opt = f'opt_0{i}'
-                subopt = f'subopt_0{j}'
-                driver.get(f'{self.url_embrapa}?opcao={opt}&subopcao={subopt}')
+        # faz o request na url principal
+        driver.get(f'{self.url_embrapa}')
 
-                results = driver.find_elements(By.LINK_TEXT, "DOWNLOAD")
+        # busca os botoes de opcoes, por itens da classe btn_opt
+        btn_opcoes = self.get_lista_btn_class(driver, 'btn_opt')
 
-                for dictionary in results:
-                    href = dictionary.get_attribute('href')
-                    print("href=", href)
-                    if ('.csv' in href.lower() ) and (href not in lista_url_csv):
-                        lista_url_csv.append(href)
+        for value_opt, txt_opt in btn_opcoes:
+            driver.get(f'{self.url_embrapa}?opcao={value_opt}')
+
+            btn_subopt = self.get_lista_btn_class(driver, 'btn_sopt')
+
+            if not btn_subopt:
+                self.add_item_lista(value_opt, "", txt_opt, "", driver, lista_url_csv)
+            else:
+                for subopt, txt in btn_subopt:
+                    driver.get(f'{self.url_embrapa}?opcao={value_opt}&subopcao={subopt}')
+                    self.add_item_lista(value_opt, subopt, txt_opt, txt, driver, lista_url_csv)
 
         return lista_url_csv
-
-
-
-
