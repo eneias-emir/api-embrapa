@@ -1,8 +1,10 @@
 import requests
+from AppConfig import AppConfig
 
-
+def url_to_csv_filename(url: str) -> str:
+    return AppConfig.PATH_DATA.value + url.rsplit("/", 1)[1]
 def download_csv(url: str) -> None:
-    file_name = './data/' + url.rsplit("/", 1)[1]
+    file_name = url_to_csv_filename(url)
 
     response = requests.get(url)
 

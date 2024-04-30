@@ -21,5 +21,8 @@ pip install fastapi uvicorn
 pip install Selenium
 pip install webdriver-manager
 
+## Instalando Pandas
+pip install pandas
+
 
 
