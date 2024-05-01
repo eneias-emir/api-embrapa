@@ -1,0 +1,35 @@
+GET http://127.0.0.1:8000/lista_urls_csv
+Accept: application/json
+
+###
+POST 127.0.0.1:8000/api/report
+Content-Type: application/json
+Cookie: key=first-value
+
+{
+  "type": "Produção",
+  "report_items": []
+}
+
+###
+PUT 127.0.0.1:8000/api/report/1
+Content-Type: application/json
+Cookie: key=first-value
+
+{
+  "id": 1,
+  "type": "Processamento",
+  "report_items": []
+}
+
+###
+
+GET 127.0.0.1:8000/api/report/1
+Content-Type: application/json
+Cookie: key=first-value
+
+###
+
+DELETE 127.0.0.1:8000/api/report/1
+Content-Type: application/json
+Cookie: key=first-value
