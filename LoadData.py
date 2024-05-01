@@ -71,16 +71,16 @@ class LoadData:
             data = csv.reader(csvfile, dialect)
 
             self.grupo_dados = ""
-            i = 0
+            # i = 0
             for row in data:
                 if row[0].lower() == 'id':
                     self.lin_cabecalho = row
                 else:
                     self.gravar_linha(item, row)
 
-                i += 1
-                if i == 5:
-                    break
+                # i += 1
+                # if i == 5:
+                #    break
 
         self.db.commit()
     def load_csv_to_database(self, lista_csv: list) -> None:

@@ -1,38 +1,49 @@
-from typing import Union
-from fastapi import FastAPI
+from starlette.background import BackgroundTasks
+from fastapi import FastAPI, Request
 from Database import Database
+
+
 import json
 
 from ScrapingEmbrapa import ScrapingEmbrapa
-from utils import download_csv
+from utils import download_csv, database_file_exists
 from LoadData import LoadData
 
 app = FastAPI()
 db = Database()
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+def get_dict_retorno_api(record: list) -> dict:
+    result = {"Atividade": record[3],
+             "Tipo": record[5],
+             "Grupo": record[6],
+             "Codigo": record[7],
+             "Produto": record[8],
+             "Ano": record[9],
+             "Qtde": record[10]
+             }
 
+    # importacao e exportacao tem a coluna valor
+    if record[2] == 'opt_05' or record[2] == 'opt_06':
+        result["Valor"] = record[11]
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+    return result
 
+def get_retorno_padrao_api(dados: list) -> dict:
+    lista = []
+    for record in dados:
+        lista.append(get_dict_retorno_api(record))
 
-@app.get("/lista_urls_csv")
-def read_lista_urls_csv():
+    result = {"data": lista}
+
+    return result
+
+def atualizar_dados() -> None:
+    print('Executando atualização de dados...')
     scraping_embrapa = ScrapingEmbrapa()
     lista = scraping_embrapa.get_lista_url_csv()
-
-    return lista
-
-
-@app.get("/atualizar_dados")
-def atualizar_dados():
-    scraping_embrapa = ScrapingEmbrapa()
-    lista = scraping_embrapa.get_lista_url_csv()
-    #lista = json.loads('[{"opt":"opt_02","subopt":"","desc_opt":"Produção","desc_subopt":"","url":"http://vitibrasil.cnpuv.embrapa.br/download/Producao.csv"},{"opt":"opt_03","subopt":"subopt_01","desc_opt":"Processamento","desc_subopt":"Viníferas","url":"http://vitibrasil.cnpuv.embrapa.br/download/ProcessaViniferas.csv"},{"opt":"opt_03","subopt":"subopt_02","desc_opt":"Processamento","desc_subopt":"Americanas e híbridas","url":"http://vitibrasil.cnpuv.embrapa.br/download/ProcessaAmericanas.csv"},{"opt":"opt_03","subopt":"subopt_03","desc_opt":"Processamento","desc_subopt":"Uvas de mesa","url":"http://vitibrasil.cnpuv.embrapa.br/download/ProcessaMesa.csv"},{"opt":"opt_03","subopt":"subopt_04","desc_opt":"Processamento","desc_subopt":"Sem classificação","url":"http://vitibrasil.cnpuv.embrapa.br/download/ProcessaSemclass.csv"},{"opt":"opt_04","subopt":"","desc_opt":"Comercialização","desc_subopt":"","url":"http://vitibrasil.cnpuv.embrapa.br/download/Comercio.csv"},{"opt":"opt_05","subopt":"subopt_01","desc_opt":"Importação","desc_subopt":"Vinhos de mesa","url":"http://vitibrasil.cnpuv.embrapa.br/download/ImpVinhos.csv"},{"opt":"opt_05","subopt":"subopt_02","desc_opt":"Importação","desc_subopt":"Espumantes","url":"http://vitibrasil.cnpuv.embrapa.br/download/ImpEspumantes.csv"},{"opt":"opt_05","subopt":"subopt_03","desc_opt":"Importação","desc_subopt":"Uvas frescas","url":"http://vitibrasil.cnpuv.embrapa.br/download/ImpFrescas.csv"},{"opt":"opt_05","subopt":"subopt_04","desc_opt":"Importação","desc_subopt":"Uvas passas","url":"http://vitibrasil.cnpuv.embrapa.br/download/ImpPassas.csv"},{"opt":"opt_05","subopt":"subopt_05","desc_opt":"Importação","desc_subopt":"Suco de uva","url":"http://vitibrasil.cnpuv.embrapa.br/download/ImpSuco.csv"},{"opt":"opt_06","subopt":"subopt_01","desc_opt":"Exportação","desc_subopt":"Vinhos de mesa","url":"http://vitibrasil.cnpuv.embrapa.br/download/ExpVinho.csv"},{"opt":"opt_06","subopt":"subopt_02","desc_opt":"Exportação","desc_subopt":"Espumantes","url":"http://vitibrasil.cnpuv.embrapa.br/download/ExpEspumantes.csv"},{"opt":"opt_06","subopt":"subopt_03","desc_opt":"Exportação","desc_subopt":"Uvas frescas","url":"http://vitibrasil.cnpuv.embrapa.br/download/ExpUva.csv"},{"opt":"opt_06","subopt":"subopt_04","desc_opt":"Exportação","desc_subopt":"Suco de uva","url":"http://vitibrasil.cnpuv.embrapa.br/download/ExpSuco.csv"}]')
+    
+    # f = open('./lista_csv.json')
+    # lista = json.load(f)
 
     for obj_url in lista:
         print("obj_url:", obj_url["url"])
@@ -41,28 +52,70 @@ def atualizar_dados():
     load = LoadData()
     load.load_csv_to_database(lista)
 
+    print(' atualização de dados concluída.')
+
+@app.on_event("startup")
+async def startup_event():
+    print('Executando rotinas de inicialização...')
+    if not database_file_exists():
+        background_tasks = BackgroundTasks()
+        background_tasks.add_task(atualizar_dados)
+        await background_tasks()
+
+@app.get("/")
+def read_root(request: Request):
+    return {"Descrição da API": "Banco de dados de uva, vinho e derivados - Embrapa Uva e Vinho",
+            "Endpoints": [
+                f'{request.url}lista_producao',
+                f'{request.url}lista_processamento',
+                f'{request.url}lista_comercializacao',
+                f'{request.url}lista_importacao',
+                f'{request.url}lista_exportacao'
+            ]
+            }
+
+@app.get("/lista_urls_csv")
+def read_lista_urls_csv():
+    scraping_embrapa = ScrapingEmbrapa()
+    lista = scraping_embrapa.get_lista_url_csv()
+
     return lista
 
 @app.get("/lista_producao")
 def get_lista_producao():
-    return db.consultar(opt='opt_02')
+    dados = db.consultar(opt='opt_02')
+
+    result = get_retorno_padrao_api(dados)
+
+    return result
 
 
 @app.get("/lista_processamento")
 def get_lista_processamento():
-    return db.consultar(opt='opt_03')
+    dados = db.consultar(opt='opt_03')
+    result = get_retorno_padrao_api(dados)
 
+    return result
 
 @app.get("/lista_comercializacao")
 def get_lista_comercializacao():
-    return db.consultar(opt='opt_04')
+    dados = db.consultar(opt='opt_04')
+    result = get_retorno_padrao_api(dados)
+
+    return result
 
 
 @app.get("/lista_importacao")
 def get_lista_importacao():
-    return db.consultar(opt='opt_05')
+    dados = db.consultar(opt='opt_05')
+    result = get_retorno_padrao_api(dados)
+
+    return result
 
 
 @app.get("/lista_exportacao")
 def get_lista_exportacao():
-    return db.consultar(opt='opt_06')
+    dados = db.consultar(opt='opt_06')
+    result = get_retorno_padrao_api(dados)
+
+    return result

@@ -1,4 +1,5 @@
 import requests
+import os
 from AppConfig import AppConfig
 
 def url_to_csv_filename(url: str) -> str:
@@ -16,3 +17,14 @@ def download_csv(url: str) -> None:
         print("CSV file downloaded successfully")
     else:
         print("Failed to download CSV file. Status code:", response.status_code)
+
+def database_file_exists() -> bool:
+    db_file_name = AppConfig.DATABASE_NAME.value + AppConfig.DATABASE_EXTENSION.value
+    working_dir = AppConfig.PATH_DATA.value
+    db_file = os.path.join(working_dir, db_file_name)
+    if not os.path.exists(db_file):
+        return False
+    else:
+        return True
+
+

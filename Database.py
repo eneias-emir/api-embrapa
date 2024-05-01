@@ -19,6 +19,24 @@ STM_DADOS_EMBRAPA = """
     VALOR         real)
 """
 
+STM_SELECT_DADOS_EMBRAPA = """
+  select
+    ID,
+    ID_ORIGEM,
+    OPT,
+    DESC_OPT,
+    SUBOPT,
+    DESC_SUBOPT,
+    GRUPO,
+    CODIGO,
+    DESCRICAO,
+    ANO,
+    QTDE,
+    VALOR
+  from DADOS_EMBRAPA
+  where OPT = ?  
+"""
+
 
 class Database:
     connection = None
@@ -37,8 +55,7 @@ class Database:
         # checking the existence of the database
         if not os.path.exists(db_file):
             # Create the database file by opening a connection
-            self.connection = sqlite3.connect(
-                'file:' + db_file + '?mode=rwc', uri=True)
+            self.connection = sqlite3.connect('file:' + db_file + '?mode=rwc', uri=True, check_same_thread=False)
 
             self.init_database()
 
@@ -47,7 +64,6 @@ class Database:
         else:
             print(f"SQLite database file '{self.dbFileName}' already exists.")
             self.connection = sqlite3.connect( db_file, check_same_thread=False )
-            self._createTabDadosEmbrapa()
 
     def init_database(self) -> None:
         self._createTabDadosEmbrapa()
@@ -64,14 +80,14 @@ class Database:
         cursor.close()
 
     def gravar_reg(self, reg: dict) -> None:
-        reg_dict = (reg['id_origem'], reg['opt'], reg['desc_opt'], reg['subopt'], reg['desc_subopt'], reg['grupo'], reg['codigo'], reg['descricao'], reg['ano'], reg['qtde'], reg['valor'])
+        reg_dict = (reg['id_origem'], reg['opt'], reg['desc_opt'], reg['subopt'], reg['desc_subopt'], reg['grupo'], reg['codigo'], reg['descricao'].strip(), reg['ano'], reg['qtde'], reg['valor'])
 
         cursor = self.connection.cursor()
         cursor.execute('insert into DADOS_EMBRAPA(ID_ORIGEM, OPT, DESC_OPT, SUBOPT, DESC_SUBOPT, GRUPO, CODIGO, DESCRICAO, ANO, QTDE, VALOR) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', reg_dict)
         cursor.close()
     def consultar(self, opt: str) -> list:
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM DADOS_EMBRAPA where OPT = ?", (opt,))
+        cursor.execute(STM_SELECT_DADOS_EMBRAPA, (opt,))
 
         rows = cursor.fetchall()
         return rows
