@@ -1,28 +1,19 @@
 # Projeto API Embrapa RS - Tech Challenge MLE1
 
-## criando um ambiente virtual
+## Criando um ambiente virtual
 
+```bash
 python -m venv .venv
-
-## Ativando o ambiente viartual
-
 .venv\Scripts\activate
+pip install -r requirements.txt
+```
 
 ## Desativando o ambiente virtual e voltando para o modo global do python
 
 deactivate
 
-## Instalando fastapi e uvicorn
+## Rodando o projeto
 
-pip install fastapi uvicorn
-
-## Instalando Selenium e WebDriver  
-
-pip install Selenium
-pip install webdriver-manager
-
-## Instalando Pandas
-pip install pandas
-
-
-
+```bash
+python -m api_embrapa
+```
