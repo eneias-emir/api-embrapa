@@ -11,6 +11,7 @@ from api_embrapa.routes import inventory
 from api_embrapa.scrapping import ScrapingEmbrapa
 from api_embrapa.utils import download_csv, database_file_exists
 from api_embrapa.LoadData import LoadData
+from api_embrapa.database import db
 
 
 def atualizar_dados() -> None:
@@ -33,7 +34,8 @@ def atualizar_dados() -> None:
 @asynccontextmanager
 async def startup_event(app: FastAPI):
     print("Executando rotinas de inicialização...")
-    if not database_file_exists():
+    #if not database_file_exists():
+    if db.database_is_empty():
         background_tasks = BackgroundTasks()
         background_tasks.add_task(atualizar_dados)
         await background_tasks()

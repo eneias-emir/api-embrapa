@@ -107,7 +107,21 @@ class Database:
         cursor.execute(STM_SELECT_DADOS_EMBRAPA, (opt,))
 
         rows = cursor.fetchall()
+        cursor.close()
+
         return rows
+
+    def database_is_empty(self) -> bool:
+        cursor = self.connection.cursor()
+        cursor.execute('SELECT exists(SELECT 1 FROM DADOS_EMBRAPA) AS row_exists')
+
+        row = cursor.fetchone()
+        cursor.close()
+
+        if row[0] == 1:
+            return False
+        else:
+            return True
 
     def commit(self) -> None:
         self.connection.commit()

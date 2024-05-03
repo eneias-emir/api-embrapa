@@ -1,4 +1,5 @@
 data/*.csv
+data/vitibrasil_embrapa.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

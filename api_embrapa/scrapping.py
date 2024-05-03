@@ -6,7 +6,8 @@ from selenium.webdriver.common.by import By
 def driver_setup():
     options = webdriver.ChromeOptions()
     # run Selenium in headless mode
-    # options.add_argument("--headless")
+    options.add_argument("--headless")
+    # options.headless = True
     options.add_argument("--no-sandbox")
     # overcome limited resource problems
     options.add_argument("--disable-dev-shm-usage")
