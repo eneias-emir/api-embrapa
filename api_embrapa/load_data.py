@@ -34,16 +34,17 @@ class LoadData:
             reg["codigo"] = codigo
             reg["descricao"] = descricao
             reg["grupo"] = self.grupo_dados
+
+            id_reg_principal = self.db.gravar_reg_principal(reg)
             while ind < len(linha):
-                reg["ano"] = self.lin_cabecalho[ind]
-                reg["qtde"] = linha[ind]
+                ano = self.lin_cabecalho[ind]
+                qtde = linha[ind]
+                valor = 0
 
                 if importacao_exportacao:
-                    reg["valor"] = linha[ind + 1]
-                else:
-                    reg["valor"] = 0
+                    valor = linha[ind + 1]
 
-                self.db.gravar_reg(reg)
+                self.db.gravar_reg_itens(id_reg_principal, ano, qtde, valor)
 
                 if importacao_exportacao:
                     ind += 2

@@ -19,6 +19,16 @@ STM_DADOS_EMBRAPA = """
     VALOR         real)
 """
 
+STM_DADOS_EMBRAPA_ITENS = """
+  create table DADOS_EMBRAPA_ITENS (
+    ID               integer primary key autoincrement,
+    ID_DADOS_EMBRAPA integer,
+    ANO           integer,
+    QTDE          real,
+    VALOR         real)
+"""
+
+
 STM_SELECT_DADOS_EMBRAPA = """
   select
     ID,
@@ -35,6 +45,27 @@ STM_SELECT_DADOS_EMBRAPA = """
     VALOR
   from DADOS_EMBRAPA
   where OPT = ?  
+"""
+
+STM_INSERT_DADOS_EMBRAPA = """
+insert into DADOS_EMBRAPA(ID_ORIGEM, 
+                          OPT, 
+                          DESC_OPT, 
+                          SUBOPT, 
+                          DESC_SUBOPT, 
+                          GRUPO, 
+                          CODIGO, 
+                          DESCRICAO) 
+                   values(?, ?, ?, ?, ?, ?, ?, ?) 
+                   RETURNING ID
+"""
+
+STM_INSERT_DADOS_EMBRAPA_ITENS = """
+insert into DADOS_EMBRAPA_ITENS(ID_DADOS_EMBRAPA, 
+                          ANO, 
+                          QTDE, 
+                          VALOR) 
+                   values(?, ?, ?, ?) 
 """
 
 
@@ -74,13 +105,16 @@ class Database:
         cursor = self.connection.cursor()
         # Create the TabData table with columns
 
+        cursor.execute("DROP TABLE IF EXISTS DADOS_EMBRAPA_ITENS")
         cursor.execute("DROP TABLE IF EXISTS DADOS_EMBRAPA")
 
         cursor.execute(STM_DADOS_EMBRAPA)
+        cursor.execute(STM_DADOS_EMBRAPA_ITENS)
+
         self.connection.commit()
         cursor.close()
 
-    def gravar_reg(self, reg: dict) -> None:
+    def gravar_reg_principal(self, reg: dict) -> int:
         reg_dict = (
             reg["id_origem"],
             reg["opt"],
@@ -89,18 +123,38 @@ class Database:
             reg["desc_subopt"],
             reg["grupo"],
             reg["codigo"],
-            reg["descricao"].strip(),
-            reg["ano"],
-            reg["qtde"],
-            reg["valor"],
+            reg["descricao"].strip()
         )
 
         cursor = self.connection.cursor()
         cursor.execute(
-            "insert into DADOS_EMBRAPA(ID_ORIGEM, OPT, DESC_OPT, SUBOPT, DESC_SUBOPT, GRUPO, CODIGO, DESCRICAO, ANO, QTDE, VALOR) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            STM_INSERT_DADOS_EMBRAPA,
             reg_dict,
         )
+
+        row = cursor.fetchone()
+        (inserted_id, ) = row if row else None
+        
         cursor.close()
+
+        return inserted_id
+    
+    def gravar_reg_itens(self, id_dados_embrapa: int, ano: int, qtde: float, valor: float) -> None:
+        reg_dict = (
+            id_dados_embrapa,
+            ano,
+            qtde,
+            valor
+        )
+
+        cursor = self.connection.cursor()
+        cursor.execute(
+            STM_INSERT_DADOS_EMBRAPA_ITENS,
+            reg_dict,
+        )
+        
+        cursor.close()
+
 
     def consultar(self, opt: str) -> list:
         cursor = self.connection.cursor()

@@ -39,8 +39,7 @@ def get_dict_retorno_api(record: list) -> dict:
         "Grupo": record[6],
         "Codigo": record[7],
         "Produto": record[8],
-        "Ano": record[9],
-        "Qtde": record[10],
+        "Itens": [{"ano": 9999, "qtde": 9999}, {"ano": 9999, "qtde": 9999}]
     }
 
     # importacao e exportacao tem a coluna valor

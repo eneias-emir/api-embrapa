@@ -10,7 +10,7 @@ from api_embrapa.appconfig import AppConfig
 from api_embrapa.routes import inventory
 from api_embrapa.scrapping import ScrapingEmbrapa
 from api_embrapa.utils import download_csv, database_file_exists
-from api_embrapa.LoadData import LoadData
+from api_embrapa.load_data import LoadData
 from api_embrapa.database import db
 
 
