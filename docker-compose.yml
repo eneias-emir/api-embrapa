@@ -1,0 +1,11 @@
+version: '3'
+
+
+services:
+  api-embrapa:
+    image: api-embrapa:latest
+    build:
+      dockerfile: Containerfiles/APIEmbrapa.Containerfile
+      context: .
+    ports:
+      - 8000:8000
