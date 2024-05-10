@@ -89,9 +89,13 @@ class Database:
     def connect_database(self) -> None:
         # Get the current working directory
         working_dir = AppConfig.PATH_DATA
+
+        # Create the directory if it does not exist.
+        if not os.path.exists(working_dir):
+            os.makedirs(working_dir)
+
         # Construct the full path to the database file
         db_file = os.path.join(working_dir, self.dbFileName)
-        print(db_file)
         # checking the existence of the database
         if not os.path.exists(db_file):
             # Create the database file by opening a connection

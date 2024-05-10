@@ -1,7 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-
 # funcao para fazer o setup do driver
 def driver_setup():
     options = webdriver.ChromeOptions()
@@ -25,6 +24,7 @@ def driver_setup():
     options.add_experimental_option("useAutomationExtension", False)
 
     driver = webdriver.Chrome(options=options)
+
     driver.execute_script(
         "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
     )
