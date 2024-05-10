@@ -18,6 +18,9 @@ class LoadData:
     def create_database(self):
         self.db = Database()
 
+    def gerar_cabecalho_padrao(self):
+        for ano in range(1970, 2024):
+            self.lin_cabecalho.append(ano)
     def gravar_reg(
         self,
         linha: list,
@@ -63,10 +66,10 @@ class LoadData:
         reg["id_origem"] = linha[0]
 
         if opt == OPT_PRODUCAO:
-            self.gravar_reg(linha, reg, ind_inicio_ano=2, codigo="", descricao=linha[1])
+            self.gravar_reg(linha, reg, ind_inicio_ano=0, codigo="", descricao=linha[1])
         elif opt == OPT_PROCESSAMENTO or opt == OPT_COMERCIALIZACAO:
             self.gravar_reg(
-                linha, reg, ind_inicio_ano=3, codigo=linha[1], descricao=linha[2]
+                linha, reg, ind_inicio_ano=0, codigo=linha[1], descricao=linha[2]
             )
         elif opt == OPT_IMPORTACAO or opt == OPT_EXPORTACAO:
             self.gravar_reg(
@@ -79,6 +82,8 @@ class LoadData:
             )
 
     def processar_csv(self, item: dict) -> None:
+        self.gerar_cabecalho_padrao()
+
         file_path = url_to_csv_filename(item["url"])
 
         with open(file_path, newline="", encoding="utf8") as csvfile:

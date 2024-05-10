@@ -13,16 +13,15 @@ STM_DADOS_EMBRAPA = """
     DESC_SUBOPT   text(100),
     GRUPO         text(50),
     CODIGO        text(50),
-    DESCRICAO     text(100),
-    ANO           integer,
-    QTDE          real,
-    VALOR         real)
+    DESCRICAO     text(100)
+    )
 """
 
 STM_DADOS_EMBRAPA_ITENS = """
   create table DADOS_EMBRAPA_ITENS (
     ID               integer primary key autoincrement,
     ID_DADOS_EMBRAPA integer,
+    OPT           text(10),
     ANO           integer,
     QTDE          real,
     VALOR         real)
@@ -39,13 +38,22 @@ STM_SELECT_DADOS_EMBRAPA = """
     DESC_SUBOPT,
     GRUPO,
     CODIGO,
-    DESCRICAO,
-    ANO,
-    QTDE,
-    VALOR
+    DESCRICAO
   from DADOS_EMBRAPA
   where OPT = ?  
 """
+
+STM_SELECT_DADOS_EMBRAPA_ITENS = """
+  select
+    ID_DADOS_EMBRAPA,
+    ANO,
+    QTDE,
+    VALOR
+  from DADOS_EMBRAPA_ITENS
+  where OPT = ?  
+  order by ID_DADOS_EMBRAPA
+"""
+
 
 STM_INSERT_DADOS_EMBRAPA = """
 insert into DADOS_EMBRAPA(ID_ORIGEM, 
@@ -62,6 +70,7 @@ insert into DADOS_EMBRAPA(ID_ORIGEM,
 
 STM_INSERT_DADOS_EMBRAPA_ITENS = """
 insert into DADOS_EMBRAPA_ITENS(ID_DADOS_EMBRAPA, 
+                          OPT,
                           ANO, 
                           QTDE, 
                           VALOR) 
@@ -157,6 +166,9 @@ class Database:
 
 
     def consultar(self, opt: str) -> list:
+        itens_ano = self.consultar_itens(opt)
+        print("**** itens_ano ****", itens_ano)
+
         cursor = self.connection.cursor()
         cursor.execute(STM_SELECT_DADOS_EMBRAPA, (opt,))
 
@@ -164,6 +176,31 @@ class Database:
         cursor.close()
 
         return rows
+
+    def consultar_itens(self, opt: str) -> list:
+        result = {}
+
+        cursor = self.connection.cursor()
+        cursor.execute(STM_SELECT_DADOS_EMBRAPA_ITENS, (opt,))
+
+        rows = cursor.fetchall()
+        cursor.close()
+
+        itens_ano = []
+        id_ant = -1
+        for record in rows:
+            id = record[0]
+
+            if id != id_ant:
+                result[id] = itens_ano
+                id_ant = id
+                itens_ano = []
+            
+            itens_ano.append({"ano": record[1], "qtde": record[2]})
+
+        result[id] = itens_ano
+
+        return result
 
     def database_is_empty(self) -> bool:
         cursor = self.connection.cursor()
