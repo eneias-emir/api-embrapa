@@ -4,8 +4,11 @@ from api_embrapa.appconfig import AppConfig
 
 
 def url_to_csv_filename(url: str) -> str:
-    return AppConfig.PATH_DATA + url.rsplit("/", 1)[1]
+    path = AppConfig.PATH_DATA
+    if path[-1] != '/':
+        path = path + '/'
 
+    return path + url.rsplit("/", 1)[1]
 
 def download_csv(url: str) -> None:
     file_name = url_to_csv_filename(url)
@@ -33,18 +36,24 @@ def database_file_exists() -> bool:
 
 
 def get_dict_retorno_api(record: list) -> dict:
+    #print(record)
     result = {
         "Atividade": record[3],
         "Tipo": record[5],
         "Grupo": record[6],
         "Codigo": record[7],
         "Produto": record[8],
-        "Itens": [{"ano": 9999, "qtde": 9999}, {"ano": 9999, "qtde": 9999}]
+        "Itens": []
     }
 
-    # importacao e exportacao tem a coluna valor
-    if record[2] == "opt_05" or record[2] == "opt_06":
-        result["Valor"] = record[11]
+    for item in record[9]:
+        reg = {"ano": item[0], "qtde": item[1]}
+        # importacao e exportacao tem a coluna valor
+        if record[2] == "opt_05" or record[2] == "opt_06":
+            reg["Valor"] = item[2]
+
+        result["Itens"].append(reg)
+
 
     return result
 

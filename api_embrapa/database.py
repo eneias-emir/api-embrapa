@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import pandas as pd
 
 from api_embrapa.appconfig import AppConfig
 
@@ -74,7 +75,7 @@ insert into DADOS_EMBRAPA_ITENS(ID_DADOS_EMBRAPA,
                           ANO, 
                           QTDE, 
                           VALOR) 
-                   values(?, ?, ?, ?) 
+                   values(?, ?, ?, ?, ?) 
 """
 
 
@@ -152,9 +153,10 @@ class Database:
 
         return inserted_id
     
-    def gravar_reg_itens(self, id_dados_embrapa: int, ano: int, qtde: float, valor: float) -> None:
+    def gravar_reg_itens(self, id_dados_embrapa: int, opt: str, ano: int, qtde: float, valor: float) -> None:
         reg_dict = (
             id_dados_embrapa,
+            opt, 
             ano,
             qtde,
             valor
@@ -170,41 +172,50 @@ class Database:
 
 
     def consultar(self, opt: str) -> list:
-        itens_ano = self.consultar_itens(opt)
-        print("**** itens_ano ****", itens_ano)
+        itens_year = self.consultar_itens(opt)
 
         cursor = self.connection.cursor()
         cursor.execute(STM_SELECT_DADOS_EMBRAPA, (opt,))
 
-        rows = cursor.fetchall()
+        products = cursor.fetchall()
         cursor.close()
 
-        return rows
+        """
+        # Convert sets of tuples into Pandas DataFrames
+        products_df = pd.DataFrame(products, columns=['id', 'other_column', 'column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7'])
+        data_df = pd.DataFrame(itens_year, columns=['id', 'year', 'value1', 'value2'])
+
+        # Merge the two DataFrames on the 'id' column
+        merged_df = pd.merge(products_df, data_df, on='id')
+
+        # If you want to convert the result back to a list of tuples
+        result = [tuple(row) for row in merged_df.values]
+        # print(result)
+        """
+
+        # Convert sets of tuples into Pandas DataFrames
+        products_df = pd.DataFrame(products, columns=['id', 'column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8'])
+        data_df = pd.DataFrame(itens_year, columns=['id', 'year', 'value1', 'value2'])
+
+        # Merge the two DataFrames on the 'id' column
+        merged_df = pd.merge(products_df, data_df, on='id')
+
+        # Group by 'id' and aggregate the data tuples into a list
+        result = merged_df.groupby(['id', 'column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8'])[['year', 'value1', 'value2']].apply(lambda x: [tuple(row) for row in x.values]).reset_index(name='data')
+
+        # Convert the result back to a list of tuples
+        result_tuples = [tuple(row) for row in result.values]           
+
+        return result_tuples
 
     def consultar_itens(self, opt: str) -> list:
-        result = {}
-
         cursor = self.connection.cursor()
         cursor.execute(STM_SELECT_DADOS_EMBRAPA_ITENS, (opt,))
 
         rows = cursor.fetchall()
         cursor.close()
 
-        itens_ano = []
-        id_ant = -1
-        for record in rows:
-            id = record[0]
-
-            if id != id_ant:
-                result[id] = itens_ano
-                id_ant = id
-                itens_ano = []
-            
-            itens_ano.append({"ano": record[1], "qtde": record[2]})
-
-        result[id] = itens_ano
-
-        return result
+        return rows
 
     def database_is_empty(self) -> bool:
         cursor = self.connection.cursor()

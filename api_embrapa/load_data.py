@@ -18,9 +18,13 @@ class LoadData:
     def create_database(self):
         self.db = Database()
 
+    def __init__(self):
+        self.gerar_cabecalho_padrao()
+
     def gerar_cabecalho_padrao(self):
         for ano in range(1970, 2024):
             self.lin_cabecalho.append(ano)
+
     def gravar_reg(
         self,
         linha: list,
@@ -38,21 +42,24 @@ class LoadData:
             reg["descricao"] = descricao
             reg["grupo"] = self.grupo_dados
 
+            ind_cabecalho = 0
             id_reg_principal = self.db.gravar_reg_principal(reg)
             while ind < len(linha):
-                ano = self.lin_cabecalho[ind]
+                ano = self.lin_cabecalho[ind_cabecalho]
                 qtde = linha[ind]
                 valor = 0
 
                 if importacao_exportacao:
                     valor = linha[ind + 1]
 
-                self.db.gravar_reg_itens(id_reg_principal, ano, qtde, valor)
+                self.db.gravar_reg_itens(id_reg_principal, reg["opt"], ano, qtde, valor)
 
                 if importacao_exportacao:
                     ind += 2
                 else:
                     ind += 1
+
+                ind_cabecalho += 1
 
     def gravar_linha(self, item_config: dict, linha: list) -> None:
         opt = item_config["opt"]
@@ -65,11 +72,9 @@ class LoadData:
         reg["desc_subopt"] = item_config["desc_subopt"]
         reg["id_origem"] = linha[0]
 
-        if opt == OPT_PRODUCAO:
-            self.gravar_reg(linha, reg, ind_inicio_ano=0, codigo="", descricao=linha[1])
-        elif opt == OPT_PROCESSAMENTO or opt == OPT_COMERCIALIZACAO:
+        if opt == OPT_PRODUCAO or opt == OPT_PROCESSAMENTO or opt == OPT_COMERCIALIZACAO:
             self.gravar_reg(
-                linha, reg, ind_inicio_ano=0, codigo=linha[1], descricao=linha[2]
+                linha, reg, ind_inicio_ano=3, codigo=linha[1], descricao=linha[2]
             )
         elif opt == OPT_IMPORTACAO or opt == OPT_EXPORTACAO:
             self.gravar_reg(
@@ -82,7 +87,7 @@ class LoadData:
             )
 
     def processar_csv(self, item: dict) -> None:
-        self.gerar_cabecalho_padrao()
+        # self.gerar_cabecalho_padrao()
 
         file_path = url_to_csv_filename(item["url"])
 
@@ -97,14 +102,10 @@ class LoadData:
             self.grupo_dados = ""
             # i = 0
             for row in data:
-                if row[0].lower() == "id":
-                    self.lin_cabecalho = row
-                else:
+                if row[0].lower() != "id":
                     self.gravar_linha(item, row)
-
-                # i += 1
-                # if i == 5:
-                #    break
+                # else:
+                #     self.lin_cabecalho = row
 
         self.db.commit()
 

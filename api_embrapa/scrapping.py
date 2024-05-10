@@ -1,6 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
+from api_embrapa.appconfig import AppConfig
+
 # funcao para fazer o setup do driver
 def driver_setup():
     options = webdriver.ChromeOptions()
@@ -34,7 +36,7 @@ def driver_setup():
 
 class ScrapingEmbrapa:
     def __init__(self):
-        self.url_embrapa: str = "http://vitibrasil.cnpuv.embrapa.br/index.php"
+        self.url_embrapa: str = AppConfig.URL_EMBRAPA
 
     def get_lista_btn_class(self, driver: webdriver, class_name: str) -> list:
         result = []
