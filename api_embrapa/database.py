@@ -180,19 +180,6 @@ class Database:
         products = cursor.fetchall()
         cursor.close()
 
-        """
-        # Convert sets of tuples into Pandas DataFrames
-        products_df = pd.DataFrame(products, columns=['id', 'other_column', 'column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7'])
-        data_df = pd.DataFrame(itens_year, columns=['id', 'year', 'value1', 'value2'])
-
-        # Merge the two DataFrames on the 'id' column
-        merged_df = pd.merge(products_df, data_df, on='id')
-
-        # If you want to convert the result back to a list of tuples
-        result = [tuple(row) for row in merged_df.values]
-        # print(result)
-        """
-
         # Convert sets of tuples into Pandas DataFrames
         products_df = pd.DataFrame(products, columns=['id', 'column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8'])
         data_df = pd.DataFrame(itens_year, columns=['id', 'year', 'value1', 'value2'])

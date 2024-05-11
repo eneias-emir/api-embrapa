@@ -1,6 +1,7 @@
 import requests
 import os
 from api_embrapa.appconfig import AppConfig
+from api_embrapa.embrapa_csv_params import EmbrapaCsvParams
 
 
 def url_to_csv_filename(url: str) -> str:
@@ -38,21 +39,21 @@ def database_file_exists() -> bool:
 def get_dict_retorno_api(record: list) -> dict:
     #print(record)
     result = {
-        "Atividade": record[3],
-        "Tipo": record[5],
-        "Grupo": record[6],
-        "Codigo": record[7],
-        "Produto": record[8],
-        "Itens": []
+        "atividade": record[3],
+        "tipo": record[5],
+        "grupo": record[6],
+        "codigo": record[7],
+        "produto": record[8],
+        "itens": []
     }
 
     for item in record[9]:
         reg = {"ano": item[0], "qtde": item[1]}
         # importacao e exportacao tem a coluna valor
-        if record[2] == "opt_05" or record[2] == "opt_06":
+        if record[2] == EmbrapaCsvParams.OPT_IMPORTACAO or record[2] == EmbrapaCsvParams.OPT_EXPORTACAO:
             reg["Valor"] = item[2]
 
-        result["Itens"].append(reg)
+        result["itens"].append(reg)
 
 
     return result
@@ -63,6 +64,7 @@ def get_retorno_padrao_api(dados: list) -> dict:
     for record in dados:
         lista.append(get_dict_retorno_api(record))
 
-    result = {"data": lista}
+    # result = {"data": lista}
+    result = lista
 
     return result

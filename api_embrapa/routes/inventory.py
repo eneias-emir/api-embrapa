@@ -1,10 +1,24 @@
 from fastapi import APIRouter, Request
+from pydantic import BaseModel
 
 from api_embrapa.scrapping import ScrapingEmbrapa
 from api_embrapa.database import db
 from api_embrapa.utils import get_retorno_padrao_api
 
 router = APIRouter(prefix="/inventory")
+
+class ListItens(BaseModel):
+    ano: int
+    qtde: int
+    valor: float | None = None
+
+class Resp(BaseModel):
+    atividade: str
+    tipo: str
+    grupo: str
+    codigo: str
+    produto: str
+    itens: list[ListItens] = []
 
 
 @router.get("/")
@@ -35,7 +49,7 @@ def all_csvs():
     return lista
 
 
-@router.get("/production")
+@router.get("/production", response_model=list[Resp])
 def production():
     dados = db.consultar(opt="opt_02")
 
@@ -44,7 +58,7 @@ def production():
     return result
 
 
-@router.get("/processing")
+@router.get("/processing", response_model=list[Resp])
 def processing():
     dados = db.consultar(opt="opt_03")
     result = get_retorno_padrao_api(dados)
@@ -52,7 +66,7 @@ def processing():
     return result
 
 
-@router.get("/comercialization")
+@router.get("/comercialization", response_model=list[Resp])
 def comercialization():
     dados = db.consultar(opt="opt_04")
     result = get_retorno_padrao_api(dados)
@@ -60,7 +74,7 @@ def comercialization():
     return result
 
 
-@router.get("/imports")
+@router.get("/imports", response_model=list[Resp])
 def imports():
     dados = db.consultar(opt="opt_05")
     result = get_retorno_padrao_api(dados)
@@ -68,7 +82,7 @@ def imports():
     return result
 
 
-@router.get("/exports")
+@router.get("/exports", response_model=list[Resp])
 def exports():
     dados = db.consultar(opt="opt_06")
     result = get_retorno_padrao_api(dados)
