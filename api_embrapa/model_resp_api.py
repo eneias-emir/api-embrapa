@@ -20,3 +20,15 @@ class RespApiImportacaoExportacao(BaseModel):
     pais: str
     itens: list[ItensRespApi] = []
 
+class ApiDescription(BaseModel):
+    name: str
+    description: str    
+    endpoints: list[str]
+
+class ItemCsvList(BaseModel):
+    opt: str
+    subopt: str
+    desc_opt: str
+    desc_subopt: str
+    url: str
+

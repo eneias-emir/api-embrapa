@@ -3,11 +3,11 @@ from fastapi import APIRouter, Request
 from api_embrapa.scrapping import ScrapingEmbrapa
 from api_embrapa.database import db
 from api_embrapa.utils import get_retorno_padrao_api
-from api_embrapa.model_resp_api import RespApi, RespApiImportacaoExportacao
+from api_embrapa.model_resp_api import RespApi, RespApiImportacaoExportacao, ApiDescription, ItemCsvList
 
 router = APIRouter(prefix="/inventory")
 
-@router.get("/")
+@router.get("/", response_model=ApiDescription)
 def root(request: Request):
     endpoints = [
         f"{request.url}{endpoint}"
@@ -27,7 +27,7 @@ def root(request: Request):
     }
 
 
-@router.get("/all_csvs")
+@router.get("/all_csvs", response_model=list[ItemCsvList])
 def all_csvs():
     scraping_embrapa = ScrapingEmbrapa()
     lista = scraping_embrapa.get_lista_url_csv()
