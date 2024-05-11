@@ -2,6 +2,7 @@ import requests
 import os
 from api_embrapa.appconfig import AppConfig
 from api_embrapa.embrapa_csv_params import EmbrapaCsvParams
+from api_embrapa.model_resp_api import RespApi, RespApiImportacaoExportacao, ItensRespApi
 
 
 def url_to_csv_filename(url: str) -> str:
@@ -37,26 +38,42 @@ def database_file_exists() -> bool:
 
 
 def get_dict_retorno_api(record: list) -> dict:
-    #print(record)
-    result = {
-        "atividade": record[3],
-        "tipo": record[5],
-        "grupo": record[6],
-        "codigo": record[7],
-        "produto": record[8],
-        "itens": []
-    }
+    if record[2] == EmbrapaCsvParams.OPT_IMPORTACAO or record[2] == EmbrapaCsvParams.OPT_EXPORTACAO:
+        resp = RespApiImportacaoExportacao(
+            atividade = record[3],
+            tipo = record[5],
+            pais = record[8],
+            itens = []
+        )
+    else:
+        resp = RespApi(
+            atividade = record[3],
+            grupo = record[6],
+            codigo = record[7],
+            produto = record[8],
+            itens = []
+        )
+
+        if record[5] != '':
+            resp.tipo = record[5]
 
     for item in record[9]:
-        reg = {"ano": item[0], "qtde": item[1]}
+        reg = ItensRespApi(ano = int(item[0]), qtde=0)
+        if item[1] != '':
+            reg.qtde = int(item[1])
+            
         # importacao e exportacao tem a coluna valor
         if record[2] == EmbrapaCsvParams.OPT_IMPORTACAO or record[2] == EmbrapaCsvParams.OPT_EXPORTACAO:
-            reg["Valor"] = item[2]
+            if item[2] != '':
+                reg.valor = item[2]
+            else:
+                reg.valor = 0
+        else:
+            reg.valor = None    
 
-        result["itens"].append(reg)
+        resp.itens.append(reg)
 
-
-    return result
+    return resp
 
 
 def get_retorno_padrao_api(dados: list) -> dict:
