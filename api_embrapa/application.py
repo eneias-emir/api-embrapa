@@ -9,7 +9,7 @@ import uvicorn
 from api_embrapa.appconfig import AppConfig
 from api_embrapa.routes import inventory, login
 from api_embrapa.scrapping import ScrapingEmbrapa
-from api_embrapa.utils import download_csv, database_file_exists
+from api_embrapa.utils import download_csv
 from api_embrapa.load_data import LoadData
 from api_embrapa.database import db
 
@@ -70,6 +70,7 @@ def _create_app() -> FastAPI:
 
     app.include_router(router=inventory.router, prefix="/api/v1")
     app.include_router(router=login.router, prefix="/api/v1")
+    app.include_router(router=login.router_auth)
     add_middleware(app)
 
     return app

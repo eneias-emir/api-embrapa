@@ -19,7 +19,6 @@ def url_to_csv_filename(url: str) -> str:
 
 def download_csv(url: str) -> None:
     file_name = url_to_csv_filename(url)
-    print(url)
     response = requests.get(url)
 
     # Check if the request was successful (status code 200)
