@@ -9,9 +9,9 @@ from api_embrapa.appconfig import AppConfig
 from api_embrapa.database import db
 
 router = APIRouter(prefix="/login")
-
+router_auth = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/login/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 
 class Account(BaseModel):
@@ -104,7 +104,7 @@ async def get_current_active_user(
     return current_user
 
 
-@router.post("/token")
+@router_auth.post("/token")
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> Token:
