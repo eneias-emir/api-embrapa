@@ -4,6 +4,7 @@ from api_embrapa.embrapa_csv_params import EmbrapaCsvParams
 
 from api_embrapa.utils import url_to_csv_filename
 
+
 class LoadData:
     db: Database
     grupo_dados: str = ""
@@ -66,11 +67,18 @@ class LoadData:
         reg["desc_subopt"] = item_config["desc_subopt"]
         reg["id_origem"] = linha[0]
 
-        if opt == EmbrapaCsvParams.OPT_PRODUCAO or opt == EmbrapaCsvParams.OPT_PROCESSAMENTO or opt == EmbrapaCsvParams.OPT_COMERCIALIZACAO:
+        if (
+            opt == EmbrapaCsvParams.OPT_PRODUCAO
+            or opt == EmbrapaCsvParams.OPT_PROCESSAMENTO
+            or opt == EmbrapaCsvParams.OPT_COMERCIALIZACAO
+        ):
             self.gravar_reg(
                 linha, reg, ind_inicio_ano=3, codigo=linha[1], descricao=linha[2]
             )
-        elif opt == EmbrapaCsvParams.OPT_IMPORTACAO or opt == EmbrapaCsvParams.OPT_EXPORTACAO:
+        elif (
+            opt == EmbrapaCsvParams.OPT_IMPORTACAO
+            or opt == EmbrapaCsvParams.OPT_EXPORTACAO
+        ):
             self.gravar_reg(
                 linha,
                 reg,

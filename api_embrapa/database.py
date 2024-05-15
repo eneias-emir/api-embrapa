@@ -4,6 +4,16 @@ import pandas as pd
 
 from api_embrapa.appconfig import AppConfig
 
+from typing import Any
+
+STM_API_LOGIN = """
+ create table LOGIN (
+    ID            integer primary key autoincrement,
+    USERNAME      text(100),
+    PASSWORD      text(100)
+ )
+"""
+
 STM_DADOS_EMBRAPA = """
   create table DADOS_EMBRAPA (
     ID            integer primary key autoincrement,
@@ -78,6 +88,21 @@ insert into DADOS_EMBRAPA_ITENS(ID_DADOS_EMBRAPA,
                    values(?, ?, ?, ?, ?) 
 """
 
+STM_INSERT_DADOS_LOGIN = """
+insert into LOGIN(USERNAME, 
+                  PASSWORD) 
+                   values(?, ?) 
+"""
+
+STM_SELECT_DADOS_LOGIN = """
+  select
+    ID,
+    USERNAME,
+    PASSWORD
+  from LOGIN
+  where USERNAME = ?  
+"""
+
 
 class Database:
     connection = None
@@ -113,6 +138,7 @@ class Database:
 
     def init_database(self) -> None:
         self._createTabDadosEmbrapa()
+        self._createTabLogin()
 
     def _createTabDadosEmbrapa(self):
         # Create a cursor object to execute SQL statements
@@ -128,6 +154,18 @@ class Database:
         self.connection.commit()
         cursor.close()
 
+    def _createTabLogin(self):
+        # Create a cursor object to execute SQL statements
+        cursor = self.connection.cursor()
+        # Create the TabData table with columns
+
+        cursor.execute("DROP TABLE IF EXISTS LOGIN")
+
+        cursor.execute(STM_API_LOGIN)
+
+        self.connection.commit()
+        cursor.close()
+
     def gravar_reg_principal(self, reg: dict) -> int:
         reg_dict = (
             reg["id_origem"],
@@ -137,7 +175,7 @@ class Database:
             reg["desc_subopt"],
             reg["grupo"],
             reg["codigo"],
-            reg["descricao"].strip()
+            reg["descricao"].strip(),
         )
 
         cursor = self.connection.cursor()
@@ -147,29 +185,37 @@ class Database:
         )
 
         row = cursor.fetchone()
-        (inserted_id, ) = row if row else None
-        
+        (inserted_id,) = row if row else None
+
         cursor.close()
 
         return inserted_id
-    
-    def gravar_reg_itens(self, id_dados_embrapa: int, opt: str, ano: int, qtde: float, valor: float) -> None:
-        reg_dict = (
-            id_dados_embrapa,
-            opt, 
-            ano,
-            qtde,
-            valor
-        )
+
+    def gravar_reg_itens(
+        self, id_dados_embrapa: int, opt: str, ano: int, qtde: float, valor: float
+    ) -> None:
+        reg_dict = (id_dados_embrapa, opt, ano, qtde, valor)
 
         cursor = self.connection.cursor()
         cursor.execute(
             STM_INSERT_DADOS_EMBRAPA_ITENS,
             reg_dict,
         )
-        
+
         cursor.close()
 
+    def gravar_novo_login(self, username: str, password: str) -> None:
+        reg_dict = (username, password)
+
+        cursor = self.connection.cursor()
+        cursor.execute(
+            STM_INSERT_DADOS_LOGIN,
+            reg_dict,
+        )
+
+        self.connection.commit()
+
+        cursor.close()
 
     def consultar(self, opt: str) -> list:
         itens_year = self.consultar_itens(opt)
@@ -181,19 +227,57 @@ class Database:
         cursor.close()
 
         # Convert sets of tuples into Pandas DataFrames
-        products_df = pd.DataFrame(products, columns=['id', 'column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8'])
-        data_df = pd.DataFrame(itens_year, columns=['id', 'year', 'value1', 'value2'])
+        products_df = pd.DataFrame(
+            products,
+            columns=[
+                "id",
+                "column1",
+                "column2",
+                "column3",
+                "column4",
+                "column5",
+                "column6",
+                "column7",
+                "column8",
+            ],
+        )
+        data_df = pd.DataFrame(itens_year, columns=["id", "year", "value1", "value2"])
 
         # Merge the two DataFrames on the 'id' column
-        merged_df = pd.merge(products_df, data_df, on='id')
+        merged_df = pd.merge(products_df, data_df, on="id")
 
         # Group by 'id' and aggregate the data tuples into a list
-        result = merged_df.groupby(['id', 'column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8'])[['year', 'value1', 'value2']].apply(lambda x: [tuple(row) for row in x.values]).reset_index(name='data')
+        result = (
+            merged_df.groupby(
+                [
+                    "id",
+                    "column1",
+                    "column2",
+                    "column3",
+                    "column4",
+                    "column5",
+                    "column6",
+                    "column7",
+                    "column8",
+                ]
+            )[["year", "value1", "value2"]]
+            .apply(lambda x: [tuple(row) for row in x.values])
+            .reset_index(name="data")
+        )
 
         # Convert the result back to a list of tuples
-        result_tuples = [tuple(row) for row in result.values]           
+        result_tuples = [tuple(row) for row in result.values]
 
         return result_tuples
+
+    def consultar_login(self, username: str) -> Any:
+        cursor = self.connection.cursor()
+        cursor.execute(STM_SELECT_DADOS_LOGIN, (username,))
+
+        login = cursor.fetchone()
+        cursor.close()
+
+        return login
 
     def consultar_itens(self, opt: str) -> list:
         cursor = self.connection.cursor()
@@ -206,7 +290,7 @@ class Database:
 
     def database_is_empty(self) -> bool:
         cursor = self.connection.cursor()
-        cursor.execute('SELECT exists(SELECT 1 FROM DADOS_EMBRAPA) AS row_exists')
+        cursor.execute("SELECT exists(SELECT 1 FROM DADOS_EMBRAPA) AS row_exists")
 
         row = cursor.fetchone()
         cursor.close()

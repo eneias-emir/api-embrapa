@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 
 from api_embrapa.appconfig import AppConfig
 
+
 # funcao para fazer o setup do driver
 def driver_setup():
     options = webdriver.ChromeOptions()

@@ -2,19 +2,24 @@ import requests
 import os
 from api_embrapa.appconfig import AppConfig
 from api_embrapa.embrapa_csv_params import EmbrapaCsvParams
-from api_embrapa.model_resp_api import RespApi, RespApiImportacaoExportacao, ItensRespApi
+from api_embrapa.model_resp_api import (
+    RespApi,
+    RespApiImportacaoExportacao,
+    ItensRespApi,
+)
 
 
 def url_to_csv_filename(url: str) -> str:
     path = AppConfig.PATH_DATA
-    if path[-1] != '/':
-        path = path + '/'
+    if path[-1] != "/":
+        path = path + "/"
 
     return path + url.rsplit("/", 1)[1]
 
+
 def download_csv(url: str) -> None:
     file_name = url_to_csv_filename(url)
-
+    print(url)
     response = requests.get(url)
 
     # Check if the request was successful (status code 200)
@@ -38,38 +43,41 @@ def database_file_exists() -> bool:
 
 
 def get_dict_retorno_api(record: list) -> dict:
-    if record[2] == EmbrapaCsvParams.OPT_IMPORTACAO or record[2] == EmbrapaCsvParams.OPT_EXPORTACAO:
+    if (
+        record[2] == EmbrapaCsvParams.OPT_IMPORTACAO
+        or record[2] == EmbrapaCsvParams.OPT_EXPORTACAO
+    ):
         resp = RespApiImportacaoExportacao(
-            atividade = record[3],
-            tipo = record[5],
-            pais = record[8],
-            itens = []
+            atividade=record[3], tipo=record[5], pais=record[8], itens=[]
         )
     else:
         resp = RespApi(
-            atividade = record[3],
-            grupo = record[6],
-            codigo = record[7],
-            produto = record[8],
-            itens = []
+            atividade=record[3],
+            grupo=record[6],
+            codigo=record[7],
+            produto=record[8],
+            itens=[],
         )
 
-        if record[5] != '':
+        if record[5] != "":
             resp.tipo = record[5]
 
     for item in record[9]:
-        reg = ItensRespApi(ano = int(item[0]), qtde=0)
-        if item[1] != '':
+        reg = ItensRespApi(ano=int(item[0]), qtde=0)
+        if item[1] != "":
             reg.qtde = int(item[1])
-            
+
         # importacao e exportacao tem a coluna valor
-        if record[2] == EmbrapaCsvParams.OPT_IMPORTACAO or record[2] == EmbrapaCsvParams.OPT_EXPORTACAO:
-            if item[2] != '':
+        if (
+            record[2] == EmbrapaCsvParams.OPT_IMPORTACAO
+            or record[2] == EmbrapaCsvParams.OPT_EXPORTACAO
+        ):
+            if item[2] != "":
                 reg.valor = item[2]
             else:
                 reg.valor = 0
         else:
-            reg.valor = None    
+            reg.valor = None
 
         resp.itens.append(reg)
 
