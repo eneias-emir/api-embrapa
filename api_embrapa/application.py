@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from api_embrapa.appconfig import AppConfig
-from api_embrapa.routes import inventory
+from api_embrapa.routes import inventory, login
 from api_embrapa.scrapping import ScrapingEmbrapa
 from api_embrapa.utils import download_csv, database_file_exists
 from api_embrapa.load_data import LoadData
@@ -34,7 +34,7 @@ def atualizar_dados() -> None:
 @asynccontextmanager
 async def startup_event(app: FastAPI):
     print("Executando rotinas de inicialização...")
-    #if not database_file_exists():
+    # if not database_file_exists():
     if db.database_is_empty():
         background_tasks = BackgroundTasks()
         background_tasks.add_task(atualizar_dados)
@@ -69,7 +69,7 @@ def _create_app() -> FastAPI:
     app = FastAPI(lifespan=startup_event)
 
     app.include_router(router=inventory.router, prefix="/api/v1")
-
+    app.include_router(router=login.router, prefix="/api/v1")
     add_middleware(app)
 
     return app
