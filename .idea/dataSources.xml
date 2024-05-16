@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="sql_app" uuid="250bf6c4-01a4-4a71-a9a9-e9519fa2da27">
+    <data-source source="LOCAL" name="sql_app" uuid="33e3e36d-3a0d-41bf-8f80-ebd5e729be05">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\pedro\OneDrive\Documentos\ENGENHARIA DE MACHINE LEARN\fase_1_tech_challenge\fase_1_tech_challenge\sql_app.db</jdbc-url>
+      <jdbc-url>jdbc:sqlite:C:\Users\pedro\OneDrive\Documentos\ENGENHARIA_MACHINE_LEARN\Fase 1-2\fase_1_tech_challenge\sql_app.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
       <libraries>
         <library>

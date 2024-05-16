@@ -2,7 +2,7 @@ from typing import Type
 
 from sqlalchemy.orm import Session
 
-from app.models.producao import Producao
+from webapp.models import Producao
 
 
 class ProducaoRepository:
