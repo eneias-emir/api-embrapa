@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from webapp.database_config import Base, engine, get_db
 
 from webapp.producao import producao_api
-from webapp.scraping_embrapa_service import get_csv_url_list
+from webapp.service import get_csv_url_list
 
 app = FastAPI()
 Base.metadata.create_all(bind=engine)
