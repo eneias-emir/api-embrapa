@@ -1,19 +1,55 @@
-from typing import Optional
+from typing import Optional, Any, List, TypeVar, Generic
 
-from pydantic.config import ConfigDict
-from pydantic.fields import Field
-from pydantic.main import BaseModel
+from pydantic import BaseModel, Field, ConfigDict
+from sqlalchemy import select, func, Select
+from sqlalchemy.orm import Session
+from sqlalchemy.orm.query import Query as SAQuery
 
 
-class ProducaoSchema(BaseModel):
+# Definindo um tipo genérico para os itens
+T = TypeVar('T')
+
+class Page(Generic[T], BaseModel):
+    total_items: int
+    total_items_page: int
+    current_page: int
+    total_pages: int
+    items: List[T]
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
+class AgroindustriaBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: int = Field(default=None)
-    ano: str = Field(default=None)
-    qtd: int = Field(default=None)
+    id: Optional[int] = Field(default=None)
+    ano: Optional[str] = Field(default=None)
     categoria: Optional[str] = Field(default=None)
-    control: str = Field(default=None)
-    produto: str = Field(default=None)
+    qtd: Optional[int] = Field(default=None)
+
+
+class ImportacaoSchema(AgroindustriaBase):
+    pais: Optional[str] = Field(default=None)
+
+
+class ExportacaoSchema(AgroindustriaBase):
+    pais: Optional[str] = Field(default=None)
+
+
+class ProducaoSchema(AgroindustriaBase):
+    control: Optional[str] = Field(default=None)
+    produto: Optional[str] = Field(default=None)
+
+
+class ComercializacaoSchema(AgroindustriaBase):
+    control: Optional[str] = Field(default=None)
+    produto: Optional[str] = Field(default=None)
+
+
+class ProcessamentoSchema(AgroindustriaBase):
+    control: Optional[str] = Field(default=None)
+    cultivar: Optional[str] = Field(default=None)
 
 
 class Config:
