@@ -50,7 +50,7 @@ def save_csv_in_database(response: Response, table_name_processing: str, categor
     # Define a chave composta como o índice do DataFrame
     df.set_index(['id', 'ano', 'qtd', 'categoria'], inplace=True)
     # Salvando dados no banco
-    df.to_sql(table_name_processing, con=engine, if_exists='replace')
+    df.to_sql(table_name_processing, con=engine, if_exists='append')
     logging.info(f'SqlAchemy: Encerrando Conexão com banco... ')
     # Fecha a conexão com o banco de dados
     engine.dispose()
