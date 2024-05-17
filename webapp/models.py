@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column
 
-from webapp.database_config import Base
+from webapp.database import Base
 
 
 class Producao(Base):

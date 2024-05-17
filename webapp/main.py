@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 
-from webapp.database_config import Base, engine, get_db
+from webapp.database import Base, engine, get_db
 from webapp.api import router
 from webapp.scrapping import import_csv_to_base
 
