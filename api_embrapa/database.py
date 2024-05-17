@@ -65,6 +65,19 @@ STM_SELECT_DADOS_EMBRAPA_ITENS = """
   order by ID_DADOS_EMBRAPA
 """
 
+STM_SELECT_DADOS_EMBRAPA_ITENS_ANO = """
+  select
+    ID_DADOS_EMBRAPA,
+    ANO,
+    QTDE,
+    VALOR
+  from DADOS_EMBRAPA_ITENS
+  where OPT = ?  
+  and ANO = ?
+  order by ID_DADOS_EMBRAPA
+"""
+
+
 
 STM_INSERT_DADOS_EMBRAPA = """
 insert into DADOS_EMBRAPA(ID_ORIGEM, 
@@ -217,14 +230,21 @@ class Database:
 
         cursor.close()
 
-    def consultar(self, opt: str) -> list:
-        itens_year = self.consultar_itens(opt)
+    def consultar(self, opt: str, year: int = 0) -> list:
+        itens_year = self.consultar_itens(opt, year)
 
         cursor = self.connection.cursor()
         cursor.execute(STM_SELECT_DADOS_EMBRAPA, (opt,))
 
         products = cursor.fetchall()
         cursor.close()
+
+        # if the list is empty, put a item with zer values for each product
+        if not itens_year:
+            itens_year = []
+            for product in products:
+                itens_year.append((product[0], year, 0, 0))
+
 
         # Convert sets of tuples into Pandas DataFrames
         products_df = pd.DataFrame(
@@ -279,9 +299,13 @@ class Database:
 
         return login
 
-    def consultar_itens(self, opt: str) -> list:
+    def consultar_itens(self, opt: str, year: int) -> list:
         cursor = self.connection.cursor()
-        cursor.execute(STM_SELECT_DADOS_EMBRAPA_ITENS, (opt,))
+
+        if year == 0:
+            cursor.execute(STM_SELECT_DADOS_EMBRAPA_ITENS, (opt,))
+        else:
+            cursor.execute(STM_SELECT_DADOS_EMBRAPA_ITENS_ANO, (opt, year))
 
         rows = cursor.fetchall()
         cursor.close()

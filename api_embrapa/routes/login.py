@@ -126,4 +126,4 @@ async def login_for_access_token(
 async def create_user(account: Account):
     hashed_password = get_password_hash(account.password)
     db.gravar_novo_login(account.username, hashed_password)
-    return status.HTTP_200_OK
+    return status.HTTP_201_CREATED

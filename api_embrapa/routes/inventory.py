@@ -12,9 +12,19 @@ from api_embrapa.model_resp_api import (
     ItemCsvList,
 )
 
+from api_embrapa.embrapa_csv_params import EmbrapaCsvParams
+
 router = APIRouter(prefix="/inventory")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def get_data(opt: str, year: int) -> list[RespApi]:
+    dados = db.consultar(opt=opt, year=year)
+
+    result = get_retorno_padrao_api(dados)
+
+    return result
+
 
 
 @router.get("/", response_model=ApiDescription)
@@ -47,40 +57,45 @@ def all_csvs(token: Annotated[str, Depends(oauth2_scheme)]):
 
 @router.get("/production", response_model=list[RespApi])
 def production(token: Annotated[str, Depends(oauth2_scheme)]):
-    dados = db.consultar(opt="opt_02")
+    return get_data(opt=EmbrapaCsvParams.OPT_PRODUCAO, year=0)
 
-    result = get_retorno_padrao_api(dados)
-
-    return result
+@router.get("/production/{year}", response_model=list[RespApi])
+def production(token: Annotated[str, Depends(oauth2_scheme)], year: int):
+    return get_data(opt=EmbrapaCsvParams.OPT_PRODUCAO, year=year)
 
 
 @router.get("/processing", response_model=list[RespApi])
 def processing(token: Annotated[str, Depends(oauth2_scheme)]):
-    dados = db.consultar(opt="opt_03")
-    result = get_retorno_padrao_api(dados)
+    return get_data(opt=EmbrapaCsvParams.OPT_PROCESSAMENTO, year=0)
 
-    return result
+@router.get("/processing/{year}", response_model=list[RespApi])
+def processing(token: Annotated[str, Depends(oauth2_scheme)], year: int):
+    return get_data(opt=EmbrapaCsvParams.OPT_PROCESSAMENTO, year=year)
 
 
 @router.get("/comercialization", response_model=list[RespApi])
 def comercialization(token: Annotated[str, Depends(oauth2_scheme)]):
-    dados = db.consultar(opt="opt_04")
-    result = get_retorno_padrao_api(dados)
+    return get_data(opt=EmbrapaCsvParams.OPT_COMERCIALIZACAO, year=0)
 
-    return result
+@router.get("/comercialization/{year}", response_model=list[RespApi])
+def comercialization(token: Annotated[str, Depends(oauth2_scheme)], year: int):
+    return get_data(opt=EmbrapaCsvParams.OPT_COMERCIALIZACAO, year=year)
 
 
 @router.get("/imports", response_model=list[RespApiImportacaoExportacao])
 def imports(token: Annotated[str, Depends(oauth2_scheme)]):
-    dados = db.consultar(opt="opt_05")
-    result = get_retorno_padrao_api(dados)
+    return get_data(opt=EmbrapaCsvParams.OPT_IMPORTACAO, year=0)
 
-    return result
+@router.get("/imports/{year}", response_model=list[RespApiImportacaoExportacao])
+def imports(token: Annotated[str, Depends(oauth2_scheme)], year: int):
+    return get_data(opt=EmbrapaCsvParams.OPT_IMPORTACAO, year=year)
 
 
 @router.get("/exports", response_model=list[RespApiImportacaoExportacao])
 def exports(token: Annotated[str, Depends(oauth2_scheme)]):
-    dados = db.consultar(opt="opt_06")
-    result = get_retorno_padrao_api(dados)
+    return get_data(opt=EmbrapaCsvParams.OPT_EXPORTACAO, year=0)
 
-    return result
+@router.get("/exports/{year}", response_model=list[RespApiImportacaoExportacao])
+def exports(token: Annotated[str, Depends(oauth2_scheme)], year: int):
+    return get_data(opt=EmbrapaCsvParams.OPT_EXPORTACAO, year=year)
+

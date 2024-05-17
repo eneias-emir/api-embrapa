@@ -47,7 +47,13 @@ class LoadData:
                 if importacao_exportacao:
                     valor = linha[ind + 1]
 
-                self.db.gravar_reg_itens(id_reg_principal, reg["opt"], ano, qtde, valor)
+                self.db.gravar_reg_itens(
+                    id_dados_embrapa=id_reg_principal,
+                    opt=reg["opt"],
+                    ano=ano, 
+                    qtde=qtde, 
+                    valor=valor
+                    )
 
                 if importacao_exportacao:
                     ind += 2

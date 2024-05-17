@@ -7,6 +7,7 @@ from api_embrapa.model_resp_api import (
     RespApiImportacaoExportacao,
     ItensRespApi,
 )
+from numbers import Number
 
 
 def url_to_csv_filename(url: str) -> str:
@@ -63,8 +64,10 @@ def get_dict_retorno_api(record: list) -> dict:
 
     for item in record[9]:
         reg = ItensRespApi(ano=int(item[0]), qtde=0)
-        if item[1] != "":
-            reg.qtde = int(item[1])
+
+        reg_qtde = item[1]
+        if isinstance(reg_qtde, Number):
+            reg.qtde = int(reg_qtde)
 
         # importacao e exportacao tem a coluna valor
         if (
@@ -88,7 +91,6 @@ def get_retorno_padrao_api(dados: list) -> dict:
     for record in dados:
         lista.append(get_dict_retorno_api(record))
 
-    # result = {"data": lista}
     result = lista
 
     return result

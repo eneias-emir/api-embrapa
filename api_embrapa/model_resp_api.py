@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 
 
@@ -14,20 +14,20 @@ class RespApi(BaseModel):
     grupo: str
     codigo: str
     produto: str
-    itens: list[ItensRespApi] = []
+    itens: List[ItensRespApi] = []
 
 
 class RespApiImportacaoExportacao(BaseModel):
     atividade: str
     tipo: str
     pais: str
-    itens: list[ItensRespApi] = []
+    itens: List[ItensRespApi] = []
 
 
 class ApiDescription(BaseModel):
     name: str
     description: str
-    endpoints: list[str]
+    endpoints: List[str]
 
 
 class ItemCsvList(BaseModel):
