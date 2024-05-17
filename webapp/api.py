@@ -1,18 +1,15 @@
-from typing import List, Any, Sequence
-
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi.params import Query
-from sqlalchemy import Row, RowMapping, select, func
+from fastapi_sa_orm_filter.operators import Operators as ops
 from sqlalchemy.orm import Session
 
 from webapp.database_config import get_db
 from webapp.finder import GenericFinder
 from webapp.models import Producao, Processamento, Comercializacao, Exportacao, Importacao
 from webapp.schemas import ProducaoSchema, ProcessamentoSchema, ComercializacaoSchema, ExportacaoSchema, \
-    ImportacaoSchema, Page
-from fastapi_sa_orm_filter.operators import Operators as ops
-from fastapi_sa_orm_filter.main import FilterCore
+    ImportacaoSchema
+from webapp.utils import Page
 
 # Define fields and operators for filter
 my_objects_filter = {
@@ -35,8 +32,20 @@ async def findAllProducao(
         limit: int = Query(default=10, le=100),
         db: Session = Depends(get_db)
 ) -> Page[ProducaoSchema]:
+    """
+    Endpoint para recuperar todos os registros de produção.
+
+    Args:
+        q (str, optional): Consulta opcional para filtrar os resultados (padrão: vazio).
+        page (int, optional): Número da página para paginar os resultados (padrão: 1).
+        limit (int, optional): Limite de itens por página (padrão: 10).
+        db (Session): Sessão do banco de dados.
+
+    Returns:
+        Page[ProducaoSchema]: Página de resultados paginados de produção.
+    """
     finder = GenericFinder(db=db, model=Producao, schema=ProducaoSchema)
-    return finder.find_all(q=q, page=page, limit=limit, filter_confg=my_objects_filter)
+    return finder.find_all(q=q, page=page, limit=limit, filter_config=my_objects_filter)
 
 
 @router.get('/api/processamento', response_model=Page[ProcessamentoSchema])
@@ -46,8 +55,20 @@ async def findAllProcessamento(
         limit: int = Query(default=10, le=100),
         db: Session = Depends(get_db)
 ) -> Page[ProcessamentoSchema]:
+    """
+    Endpoint para recuperar todos os registros de processamento.
+
+    Args:
+        q (str, optional): Consulta opcional para filtrar os resultados (padrão: vazio).
+        page (int, optional): Número da página para paginar os resultados (padrão: 1).
+        limit (int, optional): Limite de itens por página (padrão: 10).
+        db (Session): Sessão do banco de dados.
+
+    Returns:
+        Page[ProcessamentoSchema]: Página de resultados paginados de processamento.
+    """
     finder = GenericFinder(db=db, model=Processamento, schema=ProcessamentoSchema)
-    return finder.find_all(q=q, page=page, limit=limit, filter_confg=my_objects_filter)
+    return finder.find_all(q=q, page=page, limit=limit, filter_config=my_objects_filter)
 
 
 @router.get('/api/comercializacao', response_model=Page[ComercializacaoSchema])
@@ -57,8 +78,20 @@ async def findAllComercializacao(
         limit: int = Query(default=10, le=100),
         db: Session = Depends(get_db)
 ) -> Page[ComercializacaoSchema]:
+    """
+    Endpoint para recuperar todos os registros de comercialização.
+
+    Args:
+        q (str, optional): Consulta opcional para filtrar os resultados (padrão: vazio).
+        page (int, optional): Número da página para paginar os resultados (padrão: 1).
+        limit (int, optional): Limite de itens por página (padrão: 10).
+        db (Session): Sessão do banco de dados.
+
+    Returns:
+        Page[ComercializacaoSchema]: Página de resultados paginados de comercialização.
+    """
     finder = GenericFinder(db=db, model=Comercializacao, schema=ComercializacaoSchema)
-    return finder.find_all(q=q, page=page, limit=limit, filter_confg=my_objects_filter)
+    return finder.find_all(q=q, page=page, limit=limit, filter_config=my_objects_filter)
 
 
 @router.get('/api/exportacao', response_model=Page[ExportacaoSchema])
@@ -68,8 +101,20 @@ async def findAllExportacao(
         limit: int = Query(default=10, le=100),
         db: Session = Depends(get_db)
 ) -> Page[ExportacaoSchema]:
+    """
+    Endpoint para recuperar todos os registros de exportação.
+
+    Args:
+        q (str, optional): Consulta opcional para filtrar os resultados (padrão: vazio).
+        page (int, optional): Número da página para paginar os resultados (padrão: 1).
+        limit (int, optional): Limite de itens por página (padrão: 10).
+        db (Session): Sessão do banco de dados.
+
+    Returns:
+        Page[ExportacaoSchema]: Página de resultados paginados de exportação.
+    """
     finder = GenericFinder(db=db, model=Exportacao, schema=ExportacaoSchema)
-    return finder.find_all(q=q, page=page, limit=limit, filter_confg=my_objects_filter)
+    return finder.find_all(q=q, page=page, limit=limit, filter_config=my_objects_filter)
 
 
 @router.get('/api/importacao', response_model=Page[ImportacaoSchema])
@@ -79,5 +124,17 @@ async def findAllImportacao(
         limit: int = Query(default=10, le=100),
         db: Session = Depends(get_db)
 ) -> Page[ImportacaoSchema]:
+    """
+    Endpoint para recuperar todos os registros de importação.
+
+    Args:
+        q (str, optional): Consulta opcional para filtrar os resultados (padrão: vazio).
+        page (int, optional): Número da página para paginar os resultados (padrão: 1).
+        limit (int, optional): Limite de itens por página (padrão: 10).
+        db (Session): Sessão do banco de dados.
+
+    Returns:
+        Page[ImportacaoSchema]: Página de resultados paginados de importação.
+    """
     finder = GenericFinder(db=db, model=Importacao, schema=ImportacaoSchema)
-    return finder.find_all(q=q, page=page, limit=limit, filter_confg=my_objects_filter)
+    return finder.find_all(q=q, page=page, limit=limit, filter_config=my_objects_filter)
