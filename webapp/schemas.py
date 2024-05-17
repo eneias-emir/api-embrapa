@@ -1,13 +1,10 @@
-from typing import Optional, Any, List, TypeVar, Generic
+from typing import Optional, List, TypeVar, Generic
 
 from pydantic import BaseModel, Field, ConfigDict
-from sqlalchemy import select, func, Select
-from sqlalchemy.orm import Session
-from sqlalchemy.orm.query import Query as SAQuery
-
 
 # Definindo um tipo genérico para os itens
 T = TypeVar('T')
+
 
 class Page(Generic[T], BaseModel):
     total_items: int
@@ -26,7 +23,7 @@ class AgroindustriaBase(BaseModel):
     id: Optional[int] = Field(default=None)
     ano: Optional[str] = Field(default=None)
     categoria: Optional[str] = Field(default=None)
-    qtd: Optional[int] = Field(default=None)
+    qtd: Optional[int] = Field(default=0)
 
 
 class ImportacaoSchema(AgroindustriaBase):
