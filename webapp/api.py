@@ -3,7 +3,7 @@ from fastapi_sa_orm_filter.operators import Operators as ops
 from sqlalchemy.orm import Session
 
 from webapp.database import get_db
-from webapp.finder import GenericFinder
+from webapp.utils import GenericFinder
 from webapp.models import Producao, Processamento, Comercializacao, Exportacao, Importacao
 from webapp.schemas import ProducaoSchema, ProcessamentoSchema, ComercializacaoSchema, ExportacaoSchema, \
     ImportacaoSchema

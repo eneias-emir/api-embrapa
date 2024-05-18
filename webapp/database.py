@@ -1,16 +1,19 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, configure_mappers
 
 # URL do banco de dados SQLite
-SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
-# URL do banco de dados PostgreSQL (exemplo)
-# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
 
-# Criando a engine do SQLAlchemy
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
+type_database = os.environ.get('DB_TYPE')
+
+engine = None
+
+if type_database == 'memory' or type_database is None:
+    engine = create_engine("sqlite:///./sql_app.db", connect_args={"check_same_thread": False})
+elif type_database == 'others':
+    engine = create_engine(os.environ.get('DB_URL'))
 
 # Criando uma sessão local
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -20,6 +23,7 @@ Base = declarative_base()
 
 # Configurando mapeamentos
 configure_mappers()
+
 
 def get_db():
     """

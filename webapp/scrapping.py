@@ -15,13 +15,22 @@ PATH: str = 'http://vitibrasil.cnpuv.embrapa.br/index.php'
 def setup_driver() -> webdriver.Chrome:
     """Configura e retorna uma instância do driver do Chrome."""
     options = webdriver.ChromeOptions()
-    options.add_argument(
-        '--headless --no-sandbox --disable-dev-shm-usage --start-maximized --disable-infobars --disable-extensions '
-        '--incognito --disable-blink-features=AutomationControlled')
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--start-maximized')
+    options.add_argument('--disable-infobars')
+    options.add_argument('--disable-extensions')
+    options.add_argument('--incognito')
+    options.add_argument('--ignore-ssl-errors=yes')
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--disable-blink-features=AutomationControlled')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
 
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Remote(
+        command_executor='http://selenium:4444/wd/hub',
+        options=options)
 
     # Oculta o atributo 'webdriver' do navegador
     driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined});")

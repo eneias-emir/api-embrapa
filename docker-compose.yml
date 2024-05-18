@@ -1,0 +1,39 @@
+version: "2.4"
+services:
+  app:
+    build:
+      context: .
+    container_name: app
+    environment:
+      DB_TYPE: others
+      DB_URL: 'postgresql://postgres:postgres@postgres:5432/postgres'
+    ports:
+    - "8000:8000"
+    depends_on:
+      - selenium
+    networks:
+      - network_deploy
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - network_deploy
+  selenium:
+    container_name: selenium
+    image: selenium/standalone-chrome
+    ports:
+      - "4444:4444"
+    networks:
+      - network_deploy
+networks:
+  network_deploy:
+    name: network_deploy
+
+
+
