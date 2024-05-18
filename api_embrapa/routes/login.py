@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from jose import JWTError, jwt
@@ -54,6 +54,8 @@ def get_user(username: str):
 def authenticate_user(username: str, password: str):
     user = get_user(username)
     if not user:
+        return False
+    if not user.password:
         return False
     if not verify_password(password, user.password):
         return False
@@ -123,7 +125,10 @@ async def login_for_access_token(
 
 
 @router.post("/register")
-async def create_user(account: Account):
+async def create_user(account: Account, response: Response):
     hashed_password = get_password_hash(account.password)
     db.gravar_novo_login(account.username, hashed_password)
-    return status.HTTP_201_CREATED
+
+    response.status_code = status.HTTP_201_CREATED
+
+    return {"user": account.username, "status": "Registred successfully"}

@@ -21,6 +21,10 @@ Em seguida, a API faz o download de cada um desses arquivos, cria um banco de da
 
 O banco de dados escolhido foi o SQLite, devido a praticidade de não precisar ser instalado e configurado, e também por não se tratar de um volume de dados muito grande que exija um banco mais potente. Além disso, o projeto não irá receber uma carga elevada de consultas simultaneas, pois se trata de dados históricos atualizados com uma baixa frequencia.
 
+Os testes foram executados usando pytest com TestClient, para validação do funcionamento dos endpoints.
+
+## Endpoints disponibilizados
+
 
 
 ## Processo de deploy da API
@@ -43,4 +47,10 @@ deactivate
 
 ```bash
 python -m api_embrapa
+```
+
+## testando
+
+```bash
+pytest -vv
 ```

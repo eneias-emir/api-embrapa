@@ -297,6 +297,9 @@ class Database:
         login = cursor.fetchone()
         cursor.close()
 
+        if not login:
+            login = (0, '', '')
+
         return login
 
     def consultar_itens(self, opt: str, year: int) -> list:
