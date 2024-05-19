@@ -11,9 +11,8 @@ class Producao(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     ano: Mapped[str] = mapped_column(primary_key=True, index=True)
     qtd: Mapped[int] = mapped_column(primary_key=True, index=True)
-    categoria: Mapped[str] = mapped_column(primary_key=True, index=True, nullable=True)
     control: Mapped[str] = mapped_column()
-    produto: Mapped[str] = mapped_column()
+    produto: Mapped[str] = mapped_column(primary_key=True)
 
 
 class Comercializacao(Base):

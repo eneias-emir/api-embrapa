@@ -5,14 +5,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, configure_mappers
 
 # URL do banco de dados SQLite
+engine = create_engine("sqlite:///./sql_app.db", connect_args={"check_same_thread": False})
 
-type_database = os.environ.get('DB_TYPE')
-
-engine = None
-
-if type_database == 'memory' or type_database is None:
-    engine = create_engine("sqlite:///./sql_app.db", connect_args={"check_same_thread": False})
-elif type_database == 'others':
+if os.environ.get('DB_TYPE') == 'others':
     engine = create_engine(os.environ.get('DB_URL'))
 
 # Criando uma sessão local

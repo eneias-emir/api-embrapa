@@ -1,4 +1,5 @@
 import logging
+import os
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -29,8 +30,11 @@ def setup_driver() -> webdriver.Chrome:
     options.add_experimental_option('useAutomationExtension', False)
 
     driver = webdriver.Remote(
-        command_executor='http://selenium:4444/wd/hub',
+        command_executor=os.environ.get('WEB_DRIVER_REMOTE_URL'),
         options=options)
+
+    if os.environ.get('WEB_DRIVER_REMOTE_URL') is None:
+        driver = webdriver.Chrome(options=options)
 
     # Oculta o atributo 'webdriver' do navegador
     driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined});")
