@@ -1,6 +1,6 @@
 import logging
 from io import StringIO
-
+from sqlalchemy import inspect,text
 import ftfy
 import pandas as pd
 import requests
@@ -49,9 +49,21 @@ def save_csv_in_database(response: Response, table_name_processing: str, categor
     df = df.assign(categoria=categoria)
     # Define a chave composta como o índice do DataFrame
     df.set_index(['id', 'ano', 'qtd', 'categoria'], inplace=True)
-    # Verificar se a coluna "index" existe e removê-la se necessário
+    df = df[~df.index.duplicated(keep='first')]
     # Salvando dados no banco
-    df.to_sql(table_name_processing, con=engine, if_exists='append')
+    # Verificar se a tabela existe
+    inspector = inspect(engine)
+    tabelas = inspector.get_table_names()
+    if table_name_processing in tabelas:
+        with engine.connect() as conn:
+            query_contagem = text(f'SELECT COUNT(*) FROM  {table_name_processing}')
+            contagem = conn.execute(query_contagem).scalar()
+            if contagem > 0:
+                df_entity_db = pd.read_sql(f'SELECT * FROM {table_name_processing}', engine)
+                df.update(df_entity_db, overwrite=True)
+                df.to_sql(table_name_processing, con=engine, if_exists='replace')
+            else:
+                df.to_sql(table_name_processing, con=engine, if_exists='append')
     logging.info(f'SqlAchemy: Encerrando Conexão com banco... ')
     # Fecha a conexão com o banco de dados
     engine.dispose()

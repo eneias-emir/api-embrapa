@@ -10,11 +10,10 @@ class Producao(Base):
     __tablename__ = 'producao'
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     ano: Mapped[str] = mapped_column(primary_key=True, index=True)
-    qtd: Mapped[int] = mapped_column(primary_key=True, index=True)
+    qtd: Mapped[int] = mapped_column(primary_key=True,index=True)
     categoria: Mapped[str] = mapped_column(primary_key=True, index=True)
-    produto: Mapped[str] = mapped_column(primary_key=True)
+    produto: Mapped[str] = mapped_column()
     control: Mapped[str] = mapped_column()
-
 
 
 class Comercializacao(Base):
@@ -38,9 +37,9 @@ class Processamento(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     ano: Mapped[str] = mapped_column(primary_key=True, index=True)
     qtd: Mapped[int] = mapped_column(primary_key=True, index=True)
-    cultivar: Mapped[str] = mapped_column(primary_key=True, index=True, nullable=True)
-    control: Mapped[str] = mapped_column(primary_key=True)
-    categoria: Mapped[str] = mapped_column(primary_key=True, index=True, nullable=True)
+    cultivar: Mapped[str] = mapped_column( index=True, nullable=True)
+    control: Mapped[str] = mapped_column()
+    categoria: Mapped[str] = mapped_column(primary_key=True, index=True)
 
 
 class Importacao(Base):
@@ -51,8 +50,8 @@ class Importacao(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     ano: Mapped[str] = mapped_column(primary_key=True, index=True)
     qtd: Mapped[int] = mapped_column(primary_key=True, index=True, nullable=True)
-    categoria: Mapped[str] = mapped_column(primary_key=True, index=True, nullable=True)
-    pais: Mapped[str] = mapped_column(primary_key=True, index=True, nullable=True)
+    categoria: Mapped[str] = mapped_column( index=True)
+    pais: Mapped[str] = mapped_column( index=True)
 
 
 class Exportacao(Base):
@@ -63,5 +62,5 @@ class Exportacao(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     ano: Mapped[str] = mapped_column(primary_key=True, index=True)
     qtd: Mapped[int] = mapped_column(primary_key=True, index=True, nullable=True)
-    categoria: Mapped[str] = mapped_column(primary_key=True, index=True, nullable=True)
-    pais: Mapped[str] = mapped_column(primary_key=True, index=True, nullable=True)
+    categoria: Mapped[str] = mapped_column(primary_key=True, index=True)
+    pais: Mapped[str] = mapped_column( index=True, nullable=True)

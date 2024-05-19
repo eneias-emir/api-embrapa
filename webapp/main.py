@@ -9,10 +9,20 @@ app = FastAPI()
 Base.metadata.create_all(bind=engine)
 
 
-@app.get("/api/sync/importar")
-def importar_producao_csv(db: Session = Depends(get_db)):
-    return import_csv_to_base(db)
+@app.get("/api/importar-csv")
+def importar_csv(db: Session = Depends(get_db)):
+    """
+    Importar CSV para o Banco de Dados
 
+    Esta função faz o scraping dos dados do site da Embrapa e importa esses dados para o banco de dados.
+
+    Args:
+    - db (Session): Sessão do banco de dados obtida através do Depends(get_db).
+
+    Returns:
+    - dict: Resultado da importação dos dados.
+    """
+    return import_csv_to_base(db)
 
 # Registro das rotas
 app.include_router(router)
