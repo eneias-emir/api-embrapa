@@ -13,6 +13,15 @@ logging.basicConfig(level=logging.INFO)
 PATH: str = 'http://vitibrasil.cnpuv.embrapa.br/index.php'
 
 
+def switch_environment(options):
+    if os.environ.get('WEB_DRIVER_REMOTE_URL') is None:
+        return webdriver.Chrome(options=options)
+    else:
+        return webdriver.Remote(
+            command_executor=os.environ.get('WEB_DRIVER_REMOTE_URL'),
+            options=options)
+
+
 def setup_driver() -> webdriver.Chrome:
     """Configura e retorna uma instância do driver do Chrome."""
     options = webdriver.ChromeOptions()
@@ -28,13 +37,7 @@ def setup_driver() -> webdriver.Chrome:
     options.add_argument('--disable-blink-features=AutomationControlled')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
-
-    driver = webdriver.Remote(
-        command_executor=os.environ.get('WEB_DRIVER_REMOTE_URL'),
-        options=options)
-
-    if os.environ.get('WEB_DRIVER_REMOTE_URL') is None:
-        driver = webdriver.Chrome(options=options)
+    driver = switch_environment(options)
 
     # Oculta o atributo 'webdriver' do navegador
     driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined});")
@@ -55,15 +58,15 @@ def import_csv_to_base(db):
     logging.info(f'Selenium: Obtendo títulos dos botões de menu principal do {PATH}... ')
     menu_options = get_button_list_by_class(driver, 'btn_opt')
     try:
-        for menu_option, table_name in menu_options:
+        for index, (menu_option, table_name) in enumerate(menu_options):
             if table_name not in ['Apresentação', 'Publicação']:
-                process_table(driver, menu_option, table_name)
+                process_table(index, driver, menu_option, table_name)
     finally:
         driver.quit()
         logging.info('Selenium: Webdriver fechado.')
 
 
-def process_table(driver, menu_option, table_name):
+def process_table(index:int, driver, menu_option:str, table_name:str):
     """
     Navega até a página do menu e importa o csv.
     Navega também sobre as categorias do menu e importa o csv.
@@ -78,10 +81,10 @@ def process_table(driver, menu_option, table_name):
     if not btn_sub_options:
         logging.info(f'Selenium: Obtendo URL do CSV de {table_name}...')
         url = get_csv_link(driver)
-        import_csv(url, table_name, None)
+        import_csv(url, table_name, f'{index}')
     else:
-        for menu_sub_option, categoria in btn_sub_options:
-            import_categoria_csv(driver, menu_option, menu_sub_option, table_name, categoria)
+        for index, (menu_sub_option, categoria) in enumerate(btn_sub_options):
+            import_categoria_csv(index, driver, menu_option, menu_sub_option, table_name, categoria)
 
 
 def get_button_list_by_class(driver: webdriver.Chrome, class_name: str) -> list:
@@ -95,7 +98,7 @@ def get_csv_link(driver: webdriver.Chrome) -> str:
                  href and '.csv' in href.get_attribute('href').lower()), "")
 
 
-def import_categoria_csv(driver, menu_option, menu_sub_option, table_name, categoria):
+def import_categoria_csv(index:int, driver, menu_option, menu_sub_option, table_name, categoria):
     """
     Obtém a url do menu_sub_option de menu_option, para importar o csv
 
@@ -109,4 +112,4 @@ def import_categoria_csv(driver, menu_option, menu_sub_option, table_name, categ
     driver.get(f'{PATH}?opcao={menu_option}&subopcao={menu_sub_option}')
     logging.info(f'Selenium: Obtendo URL de {table_name}, subreport de {categoria}...')
     url = get_csv_link(driver)
-    import_csv(url, table_name, categoria)
+    import_csv(url, table_name, f'{categoria}-{index}')

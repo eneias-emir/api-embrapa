@@ -46,12 +46,10 @@ def save_csv_in_database(response: Response, table_name_processing: str, categor
     # Carrega o CSV em um DataFrame
     df = created_csv_dataframe(response)
     # Cria uma coluna para categorizar o tipo do csv
-
-    if categoria is not None:
-        df = df.assign(categoria=categoria)
-        # Define a chave composta como o índice do DataFrame
-      #  df.set_index(['id', 'ano', 'qtd', 'categoria'], inplace=True)
-    #df.set_index(['id', 'ano', 'qtd'], inplace=True)
+    df = df.assign(categoria=categoria)
+    # Define a chave composta como o índice do DataFrame
+    df.set_index(['id', 'ano', 'qtd', 'categoria'], inplace=True)
+    # Verificar se a coluna "index" existe e removê-la se necessário
     # Salvando dados no banco
     df.to_sql(table_name_processing, con=engine, if_exists='append')
     logging.info(f'SqlAchemy: Encerrando Conexão com banco... ')
@@ -72,9 +70,7 @@ def created_csv_dataframe(response: Response) -> DataFrame:
     """
     logging.info(f'Pandas: Carregando e preparando dados para importação do csv... ')
     csv_data = StringIO(ftfy.fix_text(response.text.replace('\t', ';')))
-    df = pd.read_csv(csv_data, delimiter=';', encoding='utf-8',index_col=False)
-    df = df.reset_index(drop=True)
-    df = df.drop(columns=['index'])
+    df = pd.read_csv(csv_data, delimiter=';', encoding='utf-8')
     df = unir_e_somar_colunas_duplicadas(df)
     return prepare_dataframe(df)
 

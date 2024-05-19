@@ -5,12 +5,14 @@ services:
       context: .
     container_name: app
     environment:
+      DB_LOCAL: 'disabled'
       WEB_DRIVER_REMOTE_URL: 'http://selenium:4444/wd/hub'
       DB_URL: 'postgresql://postgres:postgres@postgres:5432/postgres'
     ports:
     - "8000:8000"
     depends_on:
       - selenium
+      - postgres
     networks:
       - network_deploy
   postgres:
