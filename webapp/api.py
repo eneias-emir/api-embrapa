@@ -20,27 +20,8 @@ my_objects_filter = {
     'produto': [ops.like, ops.contains, ops.startswith]
 }
 
-q_examples = {
-    "Exemplo 1": {
-        "summary": "Exemplo de consulta utilizando like, ou seja irá buscar todos que contém do inicio o valor "
-                   "definido, funciona para todos os campos exeto qtd",
-        "value": "control__like=2023"
-    },
-    "Exemplo 2": {
-        "summary": "Exemplo de consulta utilizando que começa com o valor definido",
-        "value": "qtd__startswith=842"
-    },
-    "Exemplo 3": {
-        "summary": "Exemplo de consulta utilizando ele irá buscar todos os registros que contém o valor passado, "
-                   "funciona para todos os campos exeto qtd",
-        "value": "ano__contains=2023"
-    },
-    "Exemplo 4": {
-        "summary": "Exemplo de consulta utilizando equals ou seja neste caso tem que ser iguaao valor, eq só funciona "
-                   "para qtd",
-        "value": "qtd__eq=2023"
-    }
-}
+q_examples = "categoria__like=Sem classificação&qtd__eq=152517&ano__startswith=2000"
+
 
 router = APIRouter()
 
@@ -55,18 +36,18 @@ async def find_all_producao(
     """
     Endpoint para recuperar todos os registros de produção.
 
-    Exemplos de consulta:
-        - Filtrar por ano que contém '2023': /api/producao?q=ano_contains=2023
-        - Filtrar por quantidade que começa com '100': /api/producao?q=qtd_startswith=100
-        - Filtrar por control que contém 'de': /api/producao?q=control_contains=de
+    Exemplos de consulta:\n
+        - Filtrar por ano que contém '2023': /api/producao?q=ano__contains=2023\n
+        - Filtrar por quantidade que começa com '100': /api/producao?q=qtd__startswith=100\n
+        - Filtrar por control que contém 'de': /api/producao?q=control__contains=de
 
     Args:
-        q (str, optional): Consulta opcional para filtrar os resultados (padrão: vazio).
-        page (int, optional): Número da página para paginar os resultados (padrão: 1).
-        limit (int, optional): Limite de itens por página (padrão: 10).
-        db (Session): Sessão do banco de dados.
+        q (str, optional): Consulta opcional para filtrar os resultados (padrão: vazio).\n
+        page (int, optional): Número da página para paginar os resultados (padrão: 1).\n
+        limit (int, optional): Limite de itens por página (padrão: 10).\n
+        db (Session): Sessão do banco de dados.\n
 
-    Returns:
+    Returns:\n
         Page[ProducaoSchema]: Página de resultados paginados de produção.
     """
     finder = GenericFinder(db=db, model=Producao, schema=ProducaoSchema)
@@ -83,17 +64,17 @@ async def find_all_processamento(
     """
     Endpoint para recuperar todos os registros de processamento.
 
-    Exemplos de consulta:
-        - Filtrar por categoria que contém 'frutas': /api/processamento?q=categoria_contains=frutas
-        - Filtrar por país que contém 'Brasil': /api/processamento?q=pais_contains=Brasil
+    Exemplos de consulta:\n
+        - Filtrar por categoria que contém 'frutas': /api/processamento?q=categoria__contains=frutas\n
+        - Filtrar por país que contém 'Brasil': /api/processamento?q=pais__contains=Brasil\n
 
-    Args:
-        q (str, optional): Consulta opcional para filtrar os resultados (padrão: vazio).
-        page (int, optional): Número da página para paginar os resultados (padrão: 1).
-        limit (int, optional): Limite de itens por página (padrão: 10).
-        db (Session): Sessão do banco de dados.
+    Args:\n
+        q (str, optional): Consulta opcional para filtrar os resultados (padrão: vazio).\n
+        page (int, optional): Número da página para paginar os resultados (padrão: 1).\n
+        limit (int, optional): Limite de itens por página (padrão: 10).\n
+        db (Session): Sessão do banco de dados.\n
 
-    Returns:
+    Returns:\n
         Page[ProcessamentoSchema]: Página de resultados paginados de processamento.
     """
     finder = GenericFinder(db=db, model=Processamento, schema=ProcessamentoSchema)
@@ -110,17 +91,17 @@ async def find_all_comercializacao(
     """
     Endpoint para recuperar todos os registros de comercialização.
 
-    Exemplos de consulta:
-        - Filtrar por produto que contém 'soja': /api/comercializacao?q=produto_contains=soja
-        - Filtrar por cultivar que contém 'transgênico': /api/comercializacao?q=cultivar_contains=transgênico
+    Exemplos de consulta:\n
+        - Filtrar por produto que contém 'soja': /api/comercializacao?q=produto__contains=soja\n
+        - Filtrar por cultivar que contém 'transgênico': /api/comercializacao?q=cultivar__contains=transgênico\n
 
-    Args:
-        q (str, optional): Consulta opcional para filtrar os resultados (padrão: vazio).
-        page (int, optional): Número da página para paginar os resultados (padrão: 1).
-        limit (int, optional): Limite de itens por página (padrão: 10).
-        db (Session): Sessão do banco de dados.
+    Args:\n
+        q (str, optional): Consulta opcional para filtrar os resultados (padrão: vazio).\n
+        page (int, optional): Número da página para paginar os resultados (padrão: 1).\n
+        limit (int, optional): Limite de itens por página (padrão: 10).\n
+        db (Session): Sessão do banco de dados.\n
 
-    Returns:
+    Returns:\n
         Page[ComercializacaoSchema]: Página de resultados paginados de comercialização.
     """
     finder = GenericFinder(db=db, model=Comercializacao, schema=ComercializacaoSchema)
@@ -137,17 +118,17 @@ async def find_all_exportacao(
     """
     Endpoint para recuperar todos os registros de exportação.
 
-    Exemplos de consulta:
-        - Filtrar por ano que contém '2022': /api/exportacao?q=ano_contains=2022
-        - Filtrar por quantidade que é igual a '5000': /api/exportacao?q=qtd_eq=5000
+    Exemplos de consulta:\n
+        - Filtrar por ano que contém '2022': /api/exportacao?q=ano__contains=2022\n
+        - Filtrar por quantidade que é igual a '5000': /api/exportacao?q=qtd_eq=5000\n
 
     Args:
-        q (str, optional): Consulta opcional para filtrar os resultados (padrão: vazio).
-        page (int, optional): Número da página para paginar os resultados (padrão: 1).
-        limit (int, optional): Limite de itens por página (padrão: 10).
-        db (Session): Sessão do banco de dados.
+        q (str, optional): Consulta opcional para filtrar os resultados (padrão: vazio).\n
+        page (int, optional): Número da página para paginar os resultados (padrão: 1).\n
+        limit (int, optional): Limite de itens por página (padrão: 10).\n
+        db (Session): Sessão do banco de dados.\n
 
-    Returns:
+    Returns:\n
         Page[ExportacaoSchema]: Página de resultados paginados de exportação.
     """
     finder = GenericFinder(db=db, model=Exportacao, schema=ExportacaoSchema)
@@ -164,17 +145,17 @@ async def find_all_importacao(
     """
     Endpoint para recuperar todos os registros de importação.
 
-    Exemplos de consulta:
-        - Filtrar por país que contém 'Argentina': /api/importacao?q=pais_contains=Argentina
-        - Filtrar por produto que contém 'trigo': /api/importacao?q=produto_contains=trigo
+    Exemplos de consulta:\n
+        - Filtrar por país que contém 'Argentina': /api/importacao?q=pais__contains=Argentina\n
+        - Filtrar por produto que contém 'trigo': /api/importacao?q=produto__contains=trigo\n
 
-    Args:
-        q (str, optional): Consulta opcional para filtrar os resultados (padrão: vazio).
-        page (int, optional): Número da página para paginar os resultados (padrão: 1).
-        limit (int, optional): Limite de itens por página (padrão: 10).
-        db (Session): Sessão do banco de dados.
+    Args:\n
+        q (str, optional): Consulta opcional para filtrar os resultados (padrão: vazio).\n
+        page (int, optional): Número da página para paginar os resultados (padrão: 1).\n
+        limit (int, optional): Limite de itens por página (padrão: 10).\n
+        db (Session): Sessão do banco de dados.\n
 
-    Returns:
+    Returns:\n
         Page[ImportacaoSchema]: Página de resultados paginados de importação.
     """
     finder = GenericFinder(db=db, model=Importacao, schema=ImportacaoSchema)
