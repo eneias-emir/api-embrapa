@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker, configure_mappers
 
 
 def switch_environment():
-    if os.environ.get('DB_LOCAL') is None:
+    if os.environ.get('DB_URL') is None:
         return create_engine("sqlite:///./sql_app.db", connect_args={"check_same_thread": False})
     else:
         return create_engine(os.environ.get('DB_URL'))

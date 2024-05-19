@@ -6,12 +6,10 @@ services:
     container_name: app
     environment:
       WEB_DRIVER_CONTAINER: 'ENABLED'
-      DB_LOCAL: 'disabled'
       DB_URL: 'postgresql://postgres:postgres@postgres:5432/postgres'
     ports:
     - "8000:8000"
     depends_on:
-      - selenium
       - postgres
     restart: on-failure
     networks:
@@ -23,6 +21,7 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_INITDB_ARGS: "--data-checksums --encoding=UTF-8"
     ports:
       - "5432:5432"
     networks:
