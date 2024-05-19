@@ -90,7 +90,11 @@ def prepare_dataframe(df: DataFrame) -> DataFrame:
     logging.info(f'Pandas: Renomeando colunas ... ')
     df.rename(columns=dict(zip(df.columns, str_columns)), inplace=True)
     logging.info(f'Pandas: Alterando colunas do tipo int para convergir para coluna ano e qtd ... ')
-    return df.melt(id_vars=str_columns, var_name='ano', value_name='qtd')
+    df = df.melt(id_vars=str_columns, var_name='ano', value_name='qtd')
+    # Substituir 'nd' por 0 apenas na coluna 'sua_coluna'
+    df['qtd'] = pd.to_numeric(df['qtd'], errors='coerce').fillna(0)
+    df['qtd'] = df['qtd'].astype(int)
+    return df
 
 
 def unir_e_somar_colunas_duplicadas(df: DataFrame) -> DataFrame:
