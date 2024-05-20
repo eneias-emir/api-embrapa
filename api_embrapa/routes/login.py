@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from api_embrapa.appconfig import AppConfig
-from api_embrapa.database import db
+from api_embrapa.db.database_raw import db
 
 router = APIRouter(prefix="/login")
 router_auth = APIRouter()

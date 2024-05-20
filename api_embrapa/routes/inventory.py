@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.security import OAuth2PasswordBearer
 
 from api_embrapa.scrapping import ScrapingEmbrapa
-from api_embrapa.database import db
+from api_embrapa.db.database_raw import db
 from api_embrapa.utils import get_retorno_padrao_api
 from api_embrapa.model_resp_api import (
     RespApi,

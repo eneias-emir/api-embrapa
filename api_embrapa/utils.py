@@ -94,3 +94,11 @@ def get_retorno_padrao_api(dados: list) -> dict:
     result = lista
 
     return result
+
+def get_database_file_name() -> str:
+    if not os.path.exists(AppConfig.PATH_DATA):
+        os.makedirs(AppConfig.PATH_DATA)
+
+    db_file_name = AppConfig.DATABASE_NAME + AppConfig.DATABASE_EXTENSION
+
+    return os.path.join(AppConfig.PATH_DATA, db_file_name)

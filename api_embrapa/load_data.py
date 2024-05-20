@@ -1,17 +1,13 @@
 import csv
-from api_embrapa.database import Database
 from api_embrapa.embrapa_csv_params import EmbrapaCsvParams
+from api_embrapa.db.database_raw import db
 
 from api_embrapa.utils import url_to_csv_filename
 
 
 class LoadData:
-    db: Database
     grupo_dados: str = ""
     lin_cabecalho: list = []
-
-    def create_database(self):
-        self.db = Database()
 
     def __init__(self):
         self.gerar_cabecalho_padrao()
@@ -38,7 +34,7 @@ class LoadData:
             reg["grupo"] = self.grupo_dados
 
             ind_cabecalho = 0
-            id_reg_principal = self.db.gravar_reg_principal(reg)
+            id_reg_principal = db.gravar_reg_principal(reg)
             while ind < len(linha):
                 ano = self.lin_cabecalho[ind_cabecalho]
                 qtde = linha[ind]
@@ -47,7 +43,7 @@ class LoadData:
                 if importacao_exportacao:
                     valor = linha[ind + 1]
 
-                self.db.gravar_reg_itens(
+                db.gravar_reg_itens(
                     id_dados_embrapa=id_reg_principal,
                     opt=reg["opt"],
                     ano=ano, 
@@ -115,10 +111,8 @@ class LoadData:
                 # else:
                 #     self.lin_cabecalho = row
 
-        self.db.commit()
+        db.commit()
 
     def load_csv_to_database(self, lista_csv: list) -> None:
-        self.create_database()
-
         for item in lista_csv:
             self.processar_csv(item)

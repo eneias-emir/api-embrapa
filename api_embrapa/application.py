@@ -1,3 +1,4 @@
+import json
 from contextlib import asynccontextmanager
 from starlette.background import BackgroundTasks
 from starlette.middleware.sessions import SessionMiddleware
@@ -11,15 +12,21 @@ from api_embrapa.routes import inventory, login
 from api_embrapa.scrapping import ScrapingEmbrapa
 from api_embrapa.utils import download_csv
 from api_embrapa.load_data import LoadData
-from api_embrapa.database import db
+from api_embrapa.db.database_raw import db
 
 
 def atualizar_dados() -> None:
     print("Executando atualização de dados...")
-    scraping_embrapa = ScrapingEmbrapa()
-    lista = scraping_embrapa.get_lista_url_csv()
-    # f = open('./lista_csv.json')
-    # lista = json.load(f)
+
+    if AppConfig.PROCESSAR_SEM_SCRAPING == 'N':
+        scraping_embrapa = ScrapingEmbrapa()
+        lista = scraping_embrapa.get_lista_url_csv()
+
+        # with open('./data/lista_csv.json', 'w', encoding='utf-8') as f:
+        #     json.dump(lista, f, ensure_ascii=False, indent=4)        
+    else:
+        f = open('./data/lista_csv.json')
+        lista = json.load(f)
 
     for obj_url in lista:
         print("obj_url:", obj_url["url"])

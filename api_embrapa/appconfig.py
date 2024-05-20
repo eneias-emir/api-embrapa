@@ -9,3 +9,4 @@ class AppConfig:
     ALGORITHM = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
     URL_EMBRAPA = "http://vitibrasil.cnpuv.embrapa.br/index.php"
+    PROCESSAR_SEM_SCRAPING = 'N'

@@ -3,126 +3,15 @@ import os
 import pandas as pd
 
 from api_embrapa.appconfig import AppConfig
+from api_embrapa.db.scripts_raw import ScriptsRaw
 
 from typing import Any
-
-STM_API_LOGIN = """
- create table LOGIN (
-    ID            integer primary key autoincrement,
-    USERNAME      text(100),
-    PASSWORD      text(100)
- )
-"""
-
-STM_DADOS_EMBRAPA = """
-  create table DADOS_EMBRAPA (
-    ID            integer primary key autoincrement,
-    ID_ORIGEM     integer,
-    OPT           text(10),
-    DESC_OPT      text(100),
-    SUBOPT        text(10),
-    DESC_SUBOPT   text(100),
-    GRUPO         text(50),
-    CODIGO        text(50),
-    DESCRICAO     text(100)
-    )
-"""
-
-STM_DADOS_EMBRAPA_ITENS = """
-  create table DADOS_EMBRAPA_ITENS (
-    ID               integer primary key autoincrement,
-    ID_DADOS_EMBRAPA integer,
-    OPT           text(10),
-    ANO           integer,
-    QTDE          real,
-    VALOR         real)
-"""
-
-
-STM_SELECT_DADOS_EMBRAPA = """
-  select
-    ID,
-    ID_ORIGEM,
-    OPT,
-    DESC_OPT,
-    SUBOPT,
-    DESC_SUBOPT,
-    GRUPO,
-    CODIGO,
-    DESCRICAO
-  from DADOS_EMBRAPA
-  where OPT = ?  
-"""
-
-STM_SELECT_DADOS_EMBRAPA_ITENS = """
-  select
-    ID_DADOS_EMBRAPA,
-    ANO,
-    QTDE,
-    VALOR
-  from DADOS_EMBRAPA_ITENS
-  where OPT = ?  
-  order by ID_DADOS_EMBRAPA
-"""
-
-STM_SELECT_DADOS_EMBRAPA_ITENS_ANO = """
-  select
-    ID_DADOS_EMBRAPA,
-    ANO,
-    QTDE,
-    VALOR
-  from DADOS_EMBRAPA_ITENS
-  where OPT = ?  
-  and ANO = ?
-  order by ID_DADOS_EMBRAPA
-"""
-
-
-
-STM_INSERT_DADOS_EMBRAPA = """
-insert into DADOS_EMBRAPA(ID_ORIGEM, 
-                          OPT, 
-                          DESC_OPT, 
-                          SUBOPT, 
-                          DESC_SUBOPT, 
-                          GRUPO, 
-                          CODIGO, 
-                          DESCRICAO) 
-                   values(?, ?, ?, ?, ?, ?, ?, ?) 
-                   RETURNING ID
-"""
-
-STM_INSERT_DADOS_EMBRAPA_ITENS = """
-insert into DADOS_EMBRAPA_ITENS(ID_DADOS_EMBRAPA, 
-                          OPT,
-                          ANO, 
-                          QTDE, 
-                          VALOR) 
-                   values(?, ?, ?, ?, ?) 
-"""
-
-STM_INSERT_DADOS_LOGIN = """
-insert into LOGIN(USERNAME, 
-                  PASSWORD) 
-                   values(?, ?) 
-"""
-
-STM_SELECT_DADOS_LOGIN = """
-  select
-    ID,
-    USERNAME,
-    PASSWORD
-  from LOGIN
-  where USERNAME = ?  
-"""
-
 
 class Database:
     connection = None
 
     def __init__(self) -> None:
-        self.dbName = AppConfig.DATABASE_NAME
-        self.dbFileName = self.dbName + AppConfig.DATABASE_EXTENSION
+        self.db_file_name = AppConfig.DATABASE_NAME + AppConfig.DATABASE_EXTENSION
         self.connect_database()
 
     def connect_database(self) -> None:
@@ -134,7 +23,7 @@ class Database:
             os.makedirs(working_dir)
 
         # Construct the full path to the database file
-        db_file = os.path.join(working_dir, self.dbFileName)
+        db_file = os.path.join(working_dir, self.db_file_name)
         # checking the existence of the database
         if not os.path.exists(db_file):
             # Create the database file by opening a connection
@@ -144,9 +33,9 @@ class Database:
 
             self.init_database()
 
-            print(f"SQLite database file '{self.dbFileName}' created successfully.")
+            print(f"* SQLite database file '{self.db_file_name}' created successfully.")
         else:
-            print(f"SQLite database file '{self.dbFileName}' already exists.")
+            print(f"* SQLite database file '{self.db_file_name}' already exists.")
             self.connection = sqlite3.connect(db_file, check_same_thread=False)
 
     def init_database(self) -> None:
@@ -161,8 +50,8 @@ class Database:
         cursor.execute("DROP TABLE IF EXISTS DADOS_EMBRAPA_ITENS")
         cursor.execute("DROP TABLE IF EXISTS DADOS_EMBRAPA")
 
-        cursor.execute(STM_DADOS_EMBRAPA)
-        cursor.execute(STM_DADOS_EMBRAPA_ITENS)
+        cursor.execute(ScriptsRaw.STM_DADOS_EMBRAPA)
+        cursor.execute(ScriptsRaw.STM_DADOS_EMBRAPA_ITENS)
 
         self.connection.commit()
         cursor.close()
@@ -174,7 +63,7 @@ class Database:
 
         cursor.execute("DROP TABLE IF EXISTS LOGIN")
 
-        cursor.execute(STM_API_LOGIN)
+        cursor.execute(ScriptsRaw.STM_API_LOGIN)
 
         self.connection.commit()
         cursor.close()
@@ -193,7 +82,7 @@ class Database:
 
         cursor = self.connection.cursor()
         cursor.execute(
-            STM_INSERT_DADOS_EMBRAPA,
+            ScriptsRaw.STM_INSERT_DADOS_EMBRAPA,
             reg_dict,
         )
 
@@ -211,7 +100,7 @@ class Database:
 
         cursor = self.connection.cursor()
         cursor.execute(
-            STM_INSERT_DADOS_EMBRAPA_ITENS,
+            ScriptsRaw.STM_INSERT_DADOS_EMBRAPA_ITENS,
             reg_dict,
         )
 
@@ -222,7 +111,7 @@ class Database:
 
         cursor = self.connection.cursor()
         cursor.execute(
-            STM_INSERT_DADOS_LOGIN,
+            ScriptsRaw.STM_INSERT_DADOS_LOGIN,
             reg_dict,
         )
 
@@ -234,12 +123,12 @@ class Database:
         itens_year = self.consultar_itens(opt, year)
 
         cursor = self.connection.cursor()
-        cursor.execute(STM_SELECT_DADOS_EMBRAPA, (opt,))
+        cursor.execute(ScriptsRaw.STM_SELECT_DADOS_EMBRAPA, (opt,))
 
         products = cursor.fetchall()
         cursor.close()
 
-        # if the list is empty, put a item with zer values for each product
+        # if the list is empty, put a item with zero values for each product
         if not itens_year:
             itens_year = []
             for product in products:
@@ -292,7 +181,7 @@ class Database:
 
     def consultar_login(self, username: str) -> Any:
         cursor = self.connection.cursor()
-        cursor.execute(STM_SELECT_DADOS_LOGIN, (username,))
+        cursor.execute(ScriptsRaw.STM_SELECT_DADOS_LOGIN, (username,))
 
         login = cursor.fetchone()
         cursor.close()
@@ -306,9 +195,9 @@ class Database:
         cursor = self.connection.cursor()
 
         if year == 0:
-            cursor.execute(STM_SELECT_DADOS_EMBRAPA_ITENS, (opt,))
+            cursor.execute(ScriptsRaw.STM_SELECT_DADOS_EMBRAPA_ITENS, (opt,))
         else:
-            cursor.execute(STM_SELECT_DADOS_EMBRAPA_ITENS_ANO, (opt, year))
+            cursor.execute(ScriptsRaw.STM_SELECT_DADOS_EMBRAPA_ITENS_ANO, (opt, year))
 
         rows = cursor.fetchall()
         cursor.close()
