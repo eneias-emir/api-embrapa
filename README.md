@@ -68,8 +68,6 @@ docker-compose build
 docker-compose up
 ```
 
+# Processo de Deploy 
 
-
-
-
-
+![deploy](https://github.com/muhlucas/embrapa_tech_challenge_fiap/assets/2555291/5b14a5bc-1b4e-4453-aa28-d807715fe39b)
