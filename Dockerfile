@@ -21,6 +21,8 @@ RUN apk update && apk add --no-cache \
     openssl-dev \
     tiff-dev \
     zlib-dev \
+    postgresql-dev \
+    gcc \
     && rm -rf /var/cache/apk/*
 
 # Instalar as dependências do Python
