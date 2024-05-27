@@ -70,4 +70,5 @@ docker-compose up
 
 # Processo de Deploy 
 
-![deploy](https://github.com/muhlucas/embrapa_tech_challenge_fiap/assets/2555291/5b14a5bc-1b4e-4453-aa28-d807715fe39b)
+![deploy](https://github.com/muhlucas/embrapa_tech_challenge_fiap/assets/2555291/ea3bb315-8871-4293-a35a-f68fef0e8e53)
+
