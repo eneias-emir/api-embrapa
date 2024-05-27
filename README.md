@@ -13,7 +13,7 @@ O objetivo deste projeto é fornecer uma forma de acesso a esses dados através 
 
 ## Descrição da API
 
-Esta API foi escrita em Python, utilizando o framework FastApi. 
+Esta API foi desenvolvida em Python, utilizando o framework FastApi. 
 
 O processo de carga dos dados é executado na execução da API, onde é feito um processo de scraping no site da Embrapa, buscando por todos os links de download de arquivos CSV e gerando uma lista dos mesmos com a referencia da aba onde eles estão no site da embrapa. 
 
@@ -23,15 +23,41 @@ O banco de dados escolhido foi o SQLite, devido a praticidade de não precisar s
 
 Os testes foram executados usando pytest com TestClient, para validação do funcionamento dos endpoints.
 
+## Repositório da API no github
+
+https://github.com/eneias-emir/api-embrapa
+
 ## Endpoints disponibilizados
+
+Auth
+- /api/v1/login/register
+- /token
+
+Inventory
+- /api/v1/inventory/
+- /api/v1/inventory/all_csvs
+- /api/v1/inventory/production
+- /api/v1/inventory/production/{year}
+- /api/v1/inventory/processing
+- /api/v1/inventory/processing/{year}
+- /api/v1/inventory/comercialization
+- /api/v1/inventory/comercialization/{year}
+- /api/v1/inventory/imports
+- /api/v1/inventory/imports/{year}
+- /api/v1/inventory/exports
+- /api/v1/inventory/exports/{year}
+
 
 
 
 ## Processo de deploy da API
 
+
+### 1. Deploy no desktop para testes locais
+
 Após a replicação do repositório no ambiente de execução, basta seguir os passos listados abaixo:
 
-### Criando um ambiente virtual
+#### Criando um ambiente virtual
 
 ```bash
 python -m venv .venv
@@ -39,18 +65,23 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### Desativando o ambiente virtual e voltando para o modo global do python
+#### Desativando o ambiente virtual e voltando para o modo global do python
 
 deactivate
 
-## Rodando o projeto
+#### Rodando o projeto
 
 ```bash
 python -m api_embrapa
 ```
 
-## testando
+#### Executando testes
 
 ```bash
 pytest -vv
 ```
+
+### 2. Deploy em container docker
+
+A configuração do **docker-compose.yml** ativa uma imagem docker configurada no Containerfiles/APIEmbrapa.Containerfile. Esta configuração gera uma imagem baseada em **browserless/chrome**, efetua a instalação do python 3 e instala as dependencias.
+

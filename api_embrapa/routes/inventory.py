@@ -14,7 +14,7 @@ from api_embrapa.model_resp_api import (
 
 from api_embrapa.embrapa_csv_params import EmbrapaCsvParams
 
-router = APIRouter(prefix="/inventory")
+router = APIRouter(prefix="/inventory", tags=['inventory'])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -37,7 +37,7 @@ def root(request: Request):
             "comercialization",
             "imports",
             "exports",
-            "all",
+            "all_csvs",
         ]
     ]
     return {

@@ -8,8 +8,8 @@ from passlib.context import CryptContext
 from api_embrapa.appconfig import AppConfig
 from api_embrapa.db.database_raw import db
 
-router = APIRouter(prefix="/login")
-router_auth = APIRouter()
+router = APIRouter(prefix="/login", tags=['auth'])
+router_auth = APIRouter(tags=['auth'])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 

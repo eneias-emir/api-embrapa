@@ -77,7 +77,7 @@ def _create_app() -> FastAPI:
 
     app.include_router(router=inventory.router, prefix="/api/v1")
     app.include_router(router=login.router, prefix="/api/v1")
-    app.include_router(router=login.router_auth, prefix="/api/v1")
+    app.include_router(router=login.router_auth)
     add_middleware(app)
 
     return app
