@@ -1,3 +1,5 @@
+[![Deploy to AWS](https://github.com/muhlucas/embrapa_tech_challenge_fiap/actions/workflows/main.yml/badge.svg)](https://github.com/muhlucas/embrapa_tech_challenge_fiap/actions/workflows/main.yml)
+
 # Projeto API Embrapa - Tech Challenge FIAP
 
 Este é um projeto Python com FastAPI para realizar scraping de dados a partir do site da embrapa.
