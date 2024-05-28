@@ -28,7 +28,7 @@ router = APIRouter()
 
 @router.get('/api/producao', response_model=Page[ProducaoSchema])
 async def find_all_producao(
-        q: str = Query(default='', example=q_examples),
+        q: str = Query(default='', examples=q_examples),
         page: int = Query(default=1, ge=1),
         limit: int = Query(default=10, le=100),
         db: Session = Depends(get_db)
@@ -56,7 +56,7 @@ async def find_all_producao(
 
 @router.get('/api/processamento', response_model=Page[ProcessamentoSchema])
 async def find_all_processamento(
-        q: str = Query(default='', example=q_examples),
+        q: str = Query(default='', examples=q_examples),
         page: int = Query(default=1, ge=1),
         limit: int = Query(default=10, le=100),
         db: Session = Depends(get_db)
@@ -83,7 +83,7 @@ async def find_all_processamento(
 
 @router.get('/api/comercializacao', response_model=Page[ComercializacaoSchema])
 async def find_all_comercializacao(
-        q: str = Query(default='', example=q_examples),
+        q: str = Query(default='', examples=q_examples),
         page: int = Query(default=1, ge=1),
         limit: int = Query(default=10, le=100),
         db: Session = Depends(get_db)
@@ -110,7 +110,7 @@ async def find_all_comercializacao(
 
 @router.get('/api/exportacao', response_model=Page[ExportacaoSchema])
 async def find_all_exportacao(
-        q: str = Query(default='', example=q_examples),
+        q: str = Query(default='', examples=q_examples),
         page: int = Query(default=1, ge=1),
         limit: int = Query(default=10, le=100),
         db: Session = Depends(get_db)
@@ -137,7 +137,7 @@ async def find_all_exportacao(
 
 @router.get('/api/importacao', response_model=Page[ImportacaoSchema])
 async def find_all_importacao(
-        q: str = Query(default='', example=q_examples),
+        q: str = Query(default='', examples=q_examples),
         page: int = Query(default=1, ge=1),
         limit: int = Query(default=10, le=100),
         db: Session = Depends(get_db)
