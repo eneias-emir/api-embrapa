@@ -85,3 +85,16 @@ pytest -vv
 
 A configuração do **docker-compose.yml** ativa uma imagem docker configurada no Containerfiles/APIEmbrapa.Containerfile. Esta configuração gera uma imagem baseada em **browserless/chrome**, efetua a instalação do python 3 e instala as dependencias.
 
+Para gerar a imagem, basta executar os comandos abaixo:
+
+Para construir as imagens:
+
+```bash
+docker-compose build
+```
+
+Para rodar a aplicação:
+
+```bash
+docker-compose up
+```
