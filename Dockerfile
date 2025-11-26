@@ -26,7 +26,7 @@ RUN apk update && apk add --no-cache \
     && rm -rf /var/cache/apk/*
 
 # Instalar as dependências do Python
-RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /app/pyproject.toml
 
 # Definir a variável de ambiente para o Chrome
 ENV CHROME_BIN=/usr/bin/chromium-browser

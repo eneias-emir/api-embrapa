@@ -45,7 +45,7 @@ deactivate
 ### Instalando dependencias do projeto
 
 ```bash 
-pip install -r requirements.txt
+pip install -r pyproject.toml
 ```
 
 ### Crie um arquivo de variavel de ambiente .env

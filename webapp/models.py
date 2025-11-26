@@ -12,8 +12,9 @@ class Producao(Base):
     ano: Mapped[str] = mapped_column(primary_key=True, index=True)
     qtd: Mapped[int] = mapped_column(primary_key=True,index=True)
     categoria: Mapped[str] = mapped_column(primary_key=True, index=True)
-    produto: Mapped[str] = mapped_column()
-    control: Mapped[str] = mapped_column()
+    produto: Mapped[str] = mapped_column(nullable=True)
+    control: Mapped[str] = mapped_column(nullable=True)
+    tipo: Mapped[str] = mapped_column(nullable=True)
 
 
 class Comercializacao(Base):
@@ -26,7 +27,7 @@ class Comercializacao(Base):
     qtd: Mapped[int] = mapped_column(primary_key=True, index=True)
     categoria: Mapped[str] = mapped_column(primary_key=True, index=True, nullable=True)
     control: Mapped[str] = mapped_column(nullable=True)
-    produto: Mapped[str] = mapped_column()
+    produto: Mapped[str] = mapped_column(nullable=True)
 
 
 class Processamento(Base):
@@ -38,7 +39,7 @@ class Processamento(Base):
     ano: Mapped[str] = mapped_column(primary_key=True, index=True)
     qtd: Mapped[int] = mapped_column(primary_key=True, index=True)
     cultivar: Mapped[str] = mapped_column( index=True, nullable=True)
-    control: Mapped[str] = mapped_column()
+    control: Mapped[str] = mapped_column(nullable=True)
     categoria: Mapped[str] = mapped_column(primary_key=True, index=True)
 
 

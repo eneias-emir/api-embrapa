@@ -51,7 +51,7 @@ async def find_all_producao(
         Page[ProducaoSchema]: Página de resultados paginados de produção.
     """
     finder = GenericFinder(db=db, model=Producao, schema=ProducaoSchema)
-    return finder.find_all(q=q, page=page, limit=limit, filter_config=my_objects_filter)
+    return finder.find_all(q=q, page=page, limit=limit, filter_config=my_objects_filter,)
 
 
 @router.get('/api/processamento', response_model=Page[ProcessamentoSchema])
